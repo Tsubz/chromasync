@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Chromasync — The Chromatic Breathing Companion</title>
+    <meta name="description" content="An artful, single-purpose chromatic breathing sanctuary with generative fluid watercolor gradients and procedural ambient soundscapes." />
+    <meta name="theme-color" content="#0d0f14" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="apple-touch-icon" href="/icon.svg" />
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <!-- Main Canvas for WebGL / 2D Visualizer -->
+    <canvas id="gl-canvas"></canvas>
+
+    <!-- Invisible Screen Reader Live Announcer -->
+    <div id="a11y-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- Central Breath Guidance Overlay -->
+    <main id="breath-guide-container" class="breath-guide" aria-hidden="true">
+      <div class="phase-display">
+        <h1 id="phase-label" class="phase-label">Breathe with the light</h1>
+        <p id="phase-subtext" class="phase-subtext">Click anywhere or press Space to begin</p>
+        <div class="phase-indicator-ring">
+          <svg class="ring-svg" viewBox="0 0 120 120">
+            <circle class="ring-bg" cx="60" cy="60" r="54" />
+            <circle id="ring-progress" class="ring-progress" cx="60" cy="60" r="54" />
+          </svg>
+        </div>
+      </div>
+    </main>
+
+    <!-- Top Minimal Brand & Ambient Settings Bar (auto-hiding) -->
+    <header class="hud-top hud-fadeable">
+      <div class="brand">
+        <span class="brand-dot"></span>
+        <span class="brand-title">Chromasync</span>
+      </div>
+
+      <!-- Center-Top Ambient Duration Selector -->
+      <div class="top-ambient-controls">
+        <div class="session-timer-group" role="group" aria-label="Session duration">
+          <span class="top-label">Duration</span>
+          <div class="timer-pills" id="timer-pills">
+            <button class="timer-pill active" data-mins="0" title="Infinite duration">∞</button>
+            <button class="timer-pill" data-mins="3" title="3 minutes">3m</button>
+            <button class="timer-pill" data-mins="5" title="5 minutes">5m</button>
+            <button class="timer-pill" data-mins="10" title="10 minutes">10m</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <!-- Smart Frequency & Harmony Badge (Visible on desktop & mobile) -->
+        <button id="btn-tuning" class="tuning-badge-btn is-harmonized" aria-label="Harmonie Fréquentielle" title="Harmonie Fréquentielle (T)">
+          <span class="tuning-icon">✨</span>
+          <span id="tuning-text">432 Hz</span>
+          <span id="tuning-status-tag" class="tuning-status-tag">Harmonisé</span>
+        </button>
+
+        <button id="btn-oled" class="icon-btn" aria-label="Mode Yeux Fermés (OLED Noir)" title="Mode Yeux Fermés / Noir Absolu (O)">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+        <button id="btn-info" class="icon-btn" aria-label="Sciences & Rationale" title="Sciences & Origines (I)">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+        </button>
+        <button id="btn-sound" class="icon-btn" aria-label="Toggle Sound" title="Toggle Sound (M)">
+          <svg class="icon icon-sound-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+          </svg>
+          <svg class="icon icon-sound-off hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <line x1="23" y1="9" x2="17" y2="15"></line>
+            <line x1="17" y1="9" x2="23" y2="15"></line>
+          </svg>
+        </button>
+        <!-- Mobile Quick Session Timer Button (cycles ∞, 3m, 5m, 10m) -->
+        <button id="btn-timer-modal" class="icon-btn mobile-timer-btn" aria-label="Durée de Séance" title="Régler la durée de séance">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+        </button>
+        <button id="btn-fullscreen" class="icon-btn" aria-label="Toggle Fullscreen" title="Toggle Fullscreen (F)">
+          <svg class="icon icon-fullscreen-enter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+          </svg>
+          <svg class="icon icon-fullscreen-exit hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Bottom Zen Controls Dock (auto-hiding) -->
+    <nav class="hud-bottom hud-fadeable" aria-label="Breathing settings">
+      <div class="dock-panel">
+        
+        <!-- Pattern Presets Selection -->
+        <div class="dock-section patterns-section">
+          <span class="dock-label">Rhythm</span>
+          <div class="pill-group" id="pattern-pills" role="radiogroup" aria-label="Breathing pattern">
+            <!-- Populated via TypeScript -->
+          </div>
+        </div>
+
+        <div class="dock-divider"></div>
+
+        <!-- Atmosphere Picker -->
+        <div class="dock-section atmospheres-section">
+          <span class="dock-label">Atmosphere</span>
+          <div class="atmosphere-swatches" id="atmosphere-swatches" role="radiogroup" aria-label="Atmosphere">
+            <!-- Populated via TypeScript -->
+          </div>
+        </div>
+
+        <div class="dock-divider"></div>
+
+        <!-- Primary Play/Pause Controls -->
+        <div class="dock-section control-actions">
+          <button id="btn-play-pause" class="dock-action-btn primary" aria-label="Pause Breathing (Space)">
+            <svg class="btn-icon icon-pause" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="6" y="4" width="4" height="16" rx="1"></rect>
+              <rect x="14" y="4" width="4" height="16" rx="1"></rect>
+            </svg>
+            <svg class="btn-icon icon-play hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            <span id="play-pause-text">Pause</span>
+          </button>
+        </div>
+
+      </div>
+      
+      <!-- Key shortcut hint bar -->
+      <div class="hud-shortcuts-hint">
+        <span><kbd>Space</kbd> Pause</span>
+        <span><kbd>M</kbd> Mute</span>
+        <span><kbd>F</kbd> Fullscreen</span>
+        <span><kbd>1-6</kbd> Rhythms</span>
+        <span><kbd>A</kbd> Atmosphere</span>
+        <span><kbd>T</kbd> Tuning</span>
+        <span><kbd>O</kbd> OLED</span>
+        <span><kbd>I</kbd> Info</span>
+      </div>
+    </nav>
+
+    <!-- Minimalist Scientific Info Drawer (Bottom Sheet) -->
+    <div id="info-drawer" class="info-drawer hidden" aria-hidden="true" role="dialog" aria-labelledby="drawer-title">
+      <div class="drawer-backdrop" id="drawer-backdrop"></div>
+      <div class="drawer-content">
+        <div class="drawer-handle"></div>
+        <div class="drawer-header">
+          <h2 id="drawer-title" class="drawer-title">Fondements Scientifiques</h2>
+          <button id="btn-close-drawer" class="drawer-close-btn" aria-label="Fermer (Échap)">✕</button>
+        </div>
+        <div class="drawer-body">
+          <div class="drawer-card" id="info-atmosphere-card">
+            <div class="card-icon" id="info-atm-icon">🌌</div>
+            <div class="card-text">
+              <h3 id="info-atm-title">Atmosphère</h3>
+              <p id="info-atm-desc">Description</p>
+              <span class="source-tag" id="info-atm-source">Source</span>
+            </div>
+          </div>
+          <div class="drawer-card" id="info-pattern-card">
+            <div class="card-icon" id="info-pattern-icon">🫁</div>
+            <div class="card-text">
+              <h3 id="info-pattern-title">Rythme Respiratoire</h3>
+              <p id="info-pattern-desc">Description</p>
+              <span class="source-tag" id="info-pattern-source">Source</span>
+            </div>
+          </div>
+        </div>
+        <div class="drawer-footer">
+          <button id="btn-info-restore" class="btn-restore-harmony hidden">
+            ✨ Rétablir l'Harmonie Optimale
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dedicated Frequency & Harmony Drawer (Bottom Sheet) -->
+    <div id="tuning-drawer" class="info-drawer hidden" aria-hidden="true" role="dialog" aria-labelledby="tuning-drawer-title">
+      <div class="drawer-backdrop" id="tuning-drawer-backdrop"></div>
+      <div class="drawer-content">
+        <div class="drawer-handle"></div>
+        <div class="drawer-header">
+          <h2 id="tuning-drawer-title" class="drawer-title">Harmonie Fréquentielle</h2>
+          <button id="btn-close-tuning-drawer" class="drawer-close-btn" aria-label="Fermer (Échap)">✕</button>
+        </div>
+        <div class="drawer-body">
+          <!-- Harmony Status & Fast Reset Banner -->
+          <div id="harmony-status-banner" class="harmony-status-banner is-harmonized">
+            <div class="status-indicator">
+              <span class="status-pulse-dot"></span>
+              <span id="harmony-status-text">Harmonisé avec Celestial Aurora</span>
+            </div>
+            <button id="btn-restore-harmony" class="btn-restore-harmony-action hidden">
+              ✨ Rétablir l'Harmonie
+            </button>
+          </div>
+
+          <!-- Carrier Frequencies -->
+          <div class="drawer-section">
+            <span class="drawer-section-label">Fréquence Porteuse (Acoustique)</span>
+            <div class="frequency-cards" id="frequency-cards">
+              <button class="freq-card active" data-freq="432">
+                <div class="freq-card-header">
+                  <span class="freq-hz">432 Hz</span>
+                  <span class="freq-tag">Résonance Naturelle (Verdi)</span>
+                </div>
+                <p class="freq-desc">Baisse de la tension artérielle & activation vagale profonde.</p>
+                <span class="freq-rec-tag" data-rec="432">✨ Recommandé pour cette atmosphère</span>
+              </button>
+              <button class="freq-card" data-freq="528">
+                <div class="freq-card-header">
+                  <span class="freq-hz">528 Hz</span>
+                  <span class="freq-tag">Clarté & Réparation (Solfeggio)</span>
+                </div>
+                <p class="freq-desc">Réduction du cortisol salivaire & clarté contemplative.</p>
+                <span class="freq-rec-tag" data-rec="528">✨ Recommandé pour cette atmosphère</span>
+              </button>
+              <button class="freq-card" data-freq="440">
+                <div class="freq-card-header">
+                  <span class="freq-hz">440 Hz</span>
+                  <span class="freq-tag">Standard Acoustique International</span>
+                </div>
+                <p class="freq-desc">Accordage moderne de concert pour résonance neutre.</p>
+              </button>
+            </div>
+          </div>
+
+          <!-- Binaural Entrainment Waves -->
+          <div class="drawer-section">
+            <span class="drawer-section-label">Ondes Cérébrales (Battements Binauraux)</span>
+            <div class="binaural-pills" id="binaural-pills">
+              <button class="binaural-pill active" data-beat="5.5">
+                <span class="beat-name">Theta 5.5 Hz</span>
+                <span class="beat-effect">Méditation Profonde</span>
+              </button>
+              <button class="binaural-pill" data-beat="10.0">
+                <span class="beat-name">Alpha 10.0 Hz</span>
+                <span class="beat-effect">Focus & Présence</span>
+              </button>
+              <button class="binaural-pill" data-beat="4.0">
+                <span class="beat-name">Theta 4.0 Hz</span>
+                <span class="beat-effect">Sommeil & Relâchement</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- App Entrypoint -->
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
