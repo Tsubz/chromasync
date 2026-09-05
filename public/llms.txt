@@ -29,5 +29,13 @@
 - **Haptics:** Native Vibration API and Capacitor Haptics for eyes-closed tactile rhythm guidance.
 - **Platform Availability:** Modern Web (PWA), Android (Capacitor), iOS.
 
+## Deep Scientific Reference Pages (Direct Citations)
+- **0.10 Hz Baroreflex Coherence:** https://chromasync-app.web.app/science/baroreflex-resonance-0-10hz
+- **Vagal Nerve Stimulation & Acetylcholine:** https://chromasync-app.web.app/science/vagus-nerve-acetylcholine
+- **Box Breathing & Tactical Regulation:** https://chromasync-app.web.app/science/box-breathing-autonomic-regulation
+- **432 Hz vs 440 Hz Acoustic Physics:** https://chromasync-app.web.app/science/432hz-vs-440hz-acoustic-physics
+- **Binaural Beats & Brainwave Entrainment:** https://chromasync-app.web.app/science/binaural-beats-theta-entrainment
+
 ## Extended Documentation
 For the comprehensive mathematical specification and DSP formulations, see: https://chromasync-app.web.app/llms-full.txt
+

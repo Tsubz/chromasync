@@ -1,0 +1,43 @@
+name: Generate Media Reels & Video Assets
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  render-reels:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - name: Generate media reels
+        run: node scripts/render_video_reels.mjs
+
+      - name: Convert SVG Reels to MP4 with ffmpeg
+        run: |
+          mkdir -p media-reels/mp4
+          # Convert vertical animated SVG to MP4 using ffmpeg (1080x1920, 30fps, 11 seconds)
+          ffmpeg -y -loop 1 -r 30 -t 11 -i media-reels/reel-vertical-coherence.svg -c:v libx264 -pix_fmt yuv420p -vf "scale=1080:1920" media-reels/mp4/chromasync-reel-vertical.mp4 || true
+          ffmpeg -y -loop 1 -r 30 -t 11 -i media-reels/reel-horizontal-coherence.svg -c:v libx264 -pix_fmt yuv420p -vf "scale=1920:1080" media-reels/mp4/chromasync-reel-horizontal.mp4 || true
+
+      - name: Upload Media Reels Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: chromasync-social-reels
+          path: media-reels/

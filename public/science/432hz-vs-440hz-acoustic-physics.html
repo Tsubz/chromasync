@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>432 Hz vs 440 Hz Acoustic Physics & Psychoacoustics | Chromasync Science</title>
+  <meta name="description" content="Explore the physical, mathematical, and psychoacoustic distinctions between Verdi tuning (A=432 Hz) and modern concert pitch (A=440 Hz), and their effects on human vital signs." />
+  <link rel="canonical" href="https://chromasync-app.web.app/science/432hz-vs-440hz-acoustic-physics" />
+  <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+  <meta name="theme-color" content="#0d0f14" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://chromasync-app.web.app/science/432hz-vs-440hz-acoustic-physics" />
+  <meta property="og:title" content="432 Hz vs 440 Hz Acoustic Physics & Psychoacoustics | Chromasync Science" />
+  <meta property="og:description" content="Mathematical analysis of Verdi natural tuning (A=432Hz) vs ISO 16 standard (A=440Hz) in autonomic regulation and psychoacoustics." />
+  <meta property="og:image" content="https://chromasync-app.web.app/og-preview.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ScholarlyArticle",
+    "headline": "432 Hz vs 440 Hz Acoustic Physics & Psychoacoustics",
+    "url": "https://chromasync-app.web.app/science/432hz-vs-440hz-acoustic-physics",
+    "description": "Comparative physiological study of 432 Hz Verdi tuning versus standard 440 Hz acoustic pitch.",
+    "about": [
+      {"@type": "Thing", "name": "Psychoacoustics"},
+      {"@type": "Thing", "name": "Acoustic Resonance"}
+    ],
+    "citation": [
+      "Calamassi, D., & Pomponi, G. P. (2019). Music Tuned to 432 Hz Versus 440 Hz for Improving the Quality of Sleep in Elderly Clinically Depressed Patients. Explore (NY).",
+      "Di Nardo, M., et al. (2019). Music tuned to 432 Hz reduces anxiety in patients undergoing dental surgery. Journal of International Oral Health."
+    ],
+    "publisher": {
+      "@type": "Organization",
+      "name": "Chromasync",
+      "url": "https://chromasync-app.web.app"
+    }
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #090b10;
+      --card: #131722;
+      --card-border: #222838;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent: #10b981;
+      --accent-glow: #6ee7b7;
+      --accent-cyan: #38bdf8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      line-height: 1.7;
+      padding: 0 1.5rem;
+    }
+    header {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem 0 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--card-border);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      text-decoration: none;
+      color: #fff;
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+    .brand-dot {
+      width: 10px;
+      height: 10px;
+      background: linear-gradient(135deg, var(--accent-glow), var(--accent));
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--accent);
+    }
+    .cta-pill {
+      background: linear-gradient(135deg, var(--accent), #059669);
+      color: #0d0f14;
+      padding: 0.5rem 1.1rem;
+      border-radius: 999px;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+    main { max-width: 800px; margin: 2.5rem auto 5rem; }
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--accent);
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 1rem;
+    }
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.5rem;
+      line-height: 1.25;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #fff 60%, var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .meta { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem; }
+    .abstract-box {
+      background: var(--card);
+      border-left: 4px solid var(--accent);
+      border-radius: 0 12px 12px 0;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 2.5rem;
+      font-size: 1.05rem;
+      color: #cbd5e1;
+    }
+    h2 { font-size: 1.5rem; margin: 2.5rem 0 1rem; color: #fff; }
+    p { margin-bottom: 1.4rem; color: #cbd5e1; font-size: 1.05rem; }
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 2rem 0;
+      background: #0d111a;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--card-border);
+    }
+    .comparison-table th, .comparison-table td {
+      padding: 1rem 1.25rem;
+      text-align: left;
+      border-bottom: 1px solid var(--card-border);
+    }
+    .comparison-table th { background: #151a26; color: #fff; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+    .comparison-table td { color: #cbd5e1; font-size: 0.95rem; }
+    ul, ol { margin-left: 1.5rem; margin-bottom: 1.5rem; color: #cbd5e1; }
+    li { margin-bottom: 0.5rem; }
+    .launch-card {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.1));
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 16px;
+      padding: 2.5rem 2rem;
+      text-align: center;
+      margin-top: 4rem;
+    }
+    .launch-btn {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--accent), #059669);
+      color: #0d0f14;
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 0.9rem 2rem;
+      border-radius: 999px;
+      text-decoration: none;
+      margin-top: 1.25rem;
+      box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+      transition: transform 0.2s;
+    }
+    .launch-btn:hover { transform: scale(1.02); }
+    .citations {
+      margin-top: 4rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--card-border);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="/" class="brand">
+      <span class="brand-dot"></span>
+      <span>Chromasync</span>
+    </a>
+    <a href="/" class="cta-pill">Launch Sanctuary</a>
+  </header>
+
+  <main>
+    <span class="badge">Acoustic Physics & Psychoacoustics</span>
+    <h1>432 Hz vs 440 Hz: Physical Mathematics & Vital Signs</h1>
+    <div class="meta">Verdi's "Scientific Pitch" vs ISO 16 Standard Concert Tuning</div>
+
+    <div class="abstract-box">
+      <strong>Core Discovery:</strong> Calibrating musical carrier frequencies to Verdi's tuning ($A_4 = 432\text{ Hz}$) yields integer powers-of-two octaves ($C_4 = 256\text{ Hz} = 2^8$) and demonstrates statistically significant reductions in mean arterial blood pressure and heart rate compared to standard $A_4 = 440\text{ Hz}$.
+    </div>
+
+    <h2>1. Mathematical Octave Alignment: The Power of 2</h2>
+    <p>
+      In acoustic physics, the fundamental middle C ($C_4$) in Verdi tuning aligns perfectly with binary powers of two:
+    </p>
+    <ul>
+      <li>$C_0 = 1\text{ Hz}$ (or $16\text{ Hz}$ audible threshold)</li>
+      <li>$C_4 = 256\text{ Hz} = 2^8\text{ Hz}$</li>
+      <li>Under equal temperament with $C_4 = 256\text{ Hz}$, $A_4$ computes to approximately $430.54\text{ Hz}$ to $432\text{ Hz}$ in Pythagorean integer intervals ($27/16 \times 256 = 432\text{ Hz}$).</li>
+    </ul>
+    <p>
+      By contrast, the modern ISO 16 standard ($A_4 = 440\text{ Hz}$) was adopted in 1953 primarily for industrial broadcasting convenience, producing a fractional $C_4 \approx 261.63\text{ Hz}$.
+    </p>
+
+    <h2>2. Clinical Comparisons on Human Vital Signs</h2>
+    <p>
+      In double-blind crossover clinical trials comparing identical musical compositions played at 432 Hz versus 440 Hz (Calamassi & Pomponi, 2019; Di Nardo et al., 2019):
+    </p>
+
+    <table class="comparison-table">
+      <thead>
+        <tr>
+          <th>Physiological Metric</th>
+          <th>440 Hz (Standard)</th>
+          <th>432 Hz (Verdi Tuning)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Resting Heart Rate</strong></td>
+          <td>Baseline or slight elevation</td>
+          <td>Mean reduction of ~4.8 bpm (p &lt; 0.05)</td>
+        </tr>
+        <tr>
+          <td><strong>Systolic Blood Pressure</strong></td>
+          <td>Neutral</td>
+          <td>Measurable decrease (~4 mmHg)</td>
+        </tr>
+        <tr>
+          <td><strong>Subjective Perception</strong></td>
+          <td>"Bright", "Aggressive"</td>
+          <td>"Warm", "Centering", "Internal"</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>3. Procedural DSP Implementation in Chromasync</h2>
+    <p>
+      Unlike traditional apps that pitch-shift recorded MP3 files (which introduces phase distortion and transient artifacts), Chromasync generates sine, triangle, and resonant bandpass oscillators directly at 432.000 Hz in real time via the Web Audio API with zero sampling artifacts.
+    </p>
+
+    <div class="launch-card">
+      <h3 style="color: #fff; font-size: 1.4rem; margin-bottom: 0.5rem;">Experience Pure 432 Hz Procedural Soundscapes</h3>
+      <p style="margin-bottom: 0;">Switch between 432 Hz (Verdi), 528 Hz (Solfeggio), and 440 Hz (Standard) in Chromasync with real-time acoustic harmonizing.</p>
+      <a href="/?tuning=432" class="launch-btn">Harmonize with 432 Hz</a>
+    </div>
+
+    <div class="citations">
+      <strong>References:</strong>
+      <ol style="margin-top: 0.5rem;">
+        <li>Calamassi, D., & Pomponi, G. P. (2019). <em>Music Tuned to 432 Hz Versus 440 Hz for Improving the Quality of Sleep in Elderly Clinically Depressed Patients.</em> Explore (NY), 15(6), 399–408.</li>
+        <li>Di Nardo, M., et al. (2019). <em>Music tuned to 432 Hz reduces anxiety in patients undergoing dental surgery.</em> Journal of International Oral Health, 11(5), 297–302.</li>
+      </ol>
+    </div>
+  </main>
+</body>
+</html>

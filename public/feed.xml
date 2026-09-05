@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+  <title>Chromasync — The Chromatic Breathing Sanctuary</title>
+  <link>https://chromasync-app.web.app</link>
+  <description>Scientific research, procedural audio/visual synthesis updates, and release logs for Chromasync.</description>
+  <language>en-us</language>
+  <lastBuildDate>Sat, 05 Sep 2026 22:00:00 GMT</lastBuildDate>
+  <atom:link href="https://chromasync-app.web.app/feed.xml" rel="self" type="application/rss+xml" />
+
+  <item>
+    <title>Chromasync v1.0.0 Released — 18.5 KB Zero-Bloat Chromatic Breathing Sanctuary</title>
+    <link>https://github.com/Tsubz/chromasync/releases/tag/v1.0.0</link>
+    <guid>https://github.com/Tsubz/chromasync/releases/tag/v1.0.0</guid>
+    <pubDate>Sat, 05 Sep 2026 21:50:00 GMT</pubDate>
+    <description>Chromasync v1.0.0 is now live on Web (PWA) and Android (direct APK). Built with pure WebGL GLSL shaders and real-time Web Audio DSP without external audio or texture files.</description>
+  </item>
+
+  <item>
+    <title>0.10 Hz Baroreflex Coherence &amp; Respiration Rate</title>
+    <link>https://chromasync-app.web.app/science/baroreflex-resonance-0-10hz</link>
+    <guid>https://chromasync-app.web.app/science/baroreflex-resonance-0-10hz</guid>
+    <pubDate>Sat, 05 Sep 2026 22:00:00 GMT</pubDate>
+    <description>Mathematical and neurobiological analysis of 0.10 Hz baroreflex resonance frequency breathing, Mayer waves, and Heart Rate Variability (HRV).</description>
+  </item>
+
+  <item>
+    <title>Vagal Nerve Stimulation &amp; Acetylcholine Release</title>
+    <link>https://chromasync-app.web.app/science/vagus-nerve-acetylcholine</link>
+    <guid>https://chromasync-app.web.app/science/vagus-nerve-acetylcholine</guid>
+    <pubDate>Sat, 05 Sep 2026 22:00:00 GMT</pubDate>
+    <description>How asymmetric exhalation protocols (4-7-8 and Deep Unwind) disinhibit the vagal brake to release acetylcholine onto sinoatrial muscarinic receptors.</description>
+  </item>
+
+  <item>
+    <title>Box Breathing &amp; Autonomic Nervous System Regulation</title>
+    <link>https://chromasync-app.web.app/science/box-breathing-autonomic-regulation</link>
+    <guid>https://chromasync-app.web.app/science/box-breathing-autonomic-regulation</guid>
+    <pubDate>Sat, 05 Sep 2026 22:00:00 GMT</pubDate>
+    <description>Equal-ratio 4-4-4-4 respiration protocol for acute cognitive composure, CO2 stabilization, and 10.0 Hz Alpha wave entrainment.</description>
+  </item>
+
+  <item>
+    <title>432 Hz vs 440 Hz: Physical Mathematics &amp; Vital Signs</title>
+    <link>https://chromasync-app.web.app/science/432hz-vs-440hz-acoustic-physics</link>
+    <guid>https://chromasync-app.web.app/science/432hz-vs-440hz-acoustic-physics</guid>
+    <pubDate>Sat, 05 Sep 2026 22:00:00 GMT</pubDate>
+    <description>Acoustic physics of Verdi's scientific pitch (A=432 Hz, C=256 Hz) versus modern ISO 16 standard concert pitch.</description>
+  </item>
+
+  <item>
+    <title>Binaural Beats &amp; Neural Brainwave Entrainment</title>
+    <link>https://chromasync-app.web.app/science/binaural-beats-theta-entrainment</link>
+    <guid>https://chromasync-app.web.app/science/binaural-beats-theta-entrainment</guid>
+    <pubDate>Sat, 05 Sep 2026 22:00:00 GMT</pubDate>
+    <description>Electrophysiological analysis of the Frequency Following Response (FFR) in the superior olivary complex.</description>
+  </item>
+</channel>
+</rss>

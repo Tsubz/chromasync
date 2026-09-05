@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920" width="1080" height="1920">
+  <defs>
+    <style>
+      @keyframes breatheCycle {
+        0% { transform: scale(0.65); opacity: 0.4; }
+        50% { transform: scale(1.15); opacity: 0.95; }
+        100% { transform: scale(0.65); opacity: 0.4; }
+      }
+      @keyframes auraGlow {
+        0% { stop-color: #2a2040; }
+        50% { stop-color: #ffb38a; }
+        100% { stop-color: #2a2040; }
+      }
+      @keyframes phaseText {
+        0%, 10% { opacity: 1; content: "Inhale (5.5s)"; }
+        45%, 55% { opacity: 0.3; }
+        56%, 95% { opacity: 1; content: "Exhale (5.5s)"; }
+      }
+      .breathing-group {
+        transform-origin: 540px 806.4px;
+        animation: breatheCycle 11s ease-in-out infinite;
+      }
+    </style>
+    <radialGradient id="reelBg" cx="50%" cy="45%" r="70%">
+      <stop offset="0%" stop-color="#191c2b" />
+      <stop offset="60%" stop-color="#0c0e14" />
+      <stop offset="100%" stop-color="#06070a" />
+    </radialGradient>
+    <radialGradient id="fluidAura" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffb38a" stop-opacity="0.65" />
+      <stop offset="40%" stop-color="#705df2" stop-opacity="0.4" />
+      <stop offset="80%" stop-color="#38bdf8" stop-opacity="0.15" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0" />
+    </radialGradient>
+    <filter id="blurFilter" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="30" />
+    </filter>
+  </defs>
+
+  <rect width="1080" height="1920" fill="url(#reelBg)" />
+
+  <!-- Animated Fluid Breath Core -->
+  <g class="breathing-group">
+    <circle cx="540" cy="806.4" r="360" fill="url(#fluidAura)" filter="url(#blurFilter)" />
+    <circle cx="540" cy="806.4" r="220" fill="none" stroke="#705df2" stroke-width="3" stroke-dasharray="8 8" opacity="0.6" />
+    <circle cx="540" cy="806.4" r="180" fill="none" stroke="#ffb38a" stroke-width="4" opacity="0.9" />
+    <circle cx="540" cy="806.4" r="12" fill="#ffffff" />
+  </g>
+
+  <!-- Typography & Social Hook Text -->
+  <g text-anchor="middle" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif">
+    <text x="540" y="1382.3999999999999" font-size="52" font-weight="700" letter-spacing="4">CHROMASYNC</text>
+    <text x="540" y="1459.2" font-size="28" font-weight="300" fill="#94a3b8" letter-spacing="2">0.10 Hz BAROREFLEX COHERENCE</text>
+    <text x="540" y="1536" font-size="24" font-weight="400" fill="#38bdf8">18.5 KB • ZERO EXTERNAL AUDIO • PURE PROCEDURAL DSP</text>
+  </g>
+</svg>

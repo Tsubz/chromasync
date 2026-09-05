@@ -54,6 +54,13 @@ Chromasync bridges neuroaesthetics, psychoacoustics, and autonomic physiology to
 └──────────────────┘     └──────────────────┘     └──────────────────┘
 ```
 
+> 📚 **Deep Scientific Research Papers & Formulations:**
+> - [0.10 Hz Baroreflex Coherence & Respiration Rate](https://chromasync-app.web.app/science/baroreflex-resonance-0-10hz)
+> - [Vagal Nerve Stimulation & Acetylcholine Release](https://chromasync-app.web.app/science/vagus-nerve-acetylcholine)
+> - [Box Breathing & Autonomic Regulation](https://chromasync-app.web.app/science/box-breathing-autonomic-regulation)
+> - [432 Hz vs 440 Hz Acoustic Physics & Psychoacoustics](https://chromasync-app.web.app/science/432hz-vs-440hz-acoustic-physics)
+> - [Binaural Beats & Neural Brainwave Entrainment](https://chromasync-app.web.app/science/binaural-beats-theta-entrainment)
+
 ### 1. 0.10 Hz Cardiorespiratory Resonance
 The human arterial baroreflex feedback loop operates with an intrinsic ~10-second latency. Breathing at **6 breaths per minute ($0.10\text{ Hz}$)** synchronizes heart rate fluctuations (Respiratory Sinus Arrhythmia) with blood pressure oscillations (Mayer waves), maximizing Heart Rate Variability (HRV) and stimulating parasympathetic vagal outflow (*Lehrer et al., 2020*).
 

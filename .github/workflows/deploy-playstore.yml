@@ -67,13 +67,6 @@ jobs:
           keyAlias: ${{ secrets.ANDROID_KEY_ALIAS }}
           keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
 
-      - name: Upload Signed AAB as Workflow Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-release-signed-${{ github.run_number }}
-          path: ${{ steps.sign_app.outputs.signedReleaseFile }}
-          if-no-files-found: warn
-
       - name: Upload to Google Play
         if: ${{ secrets.PLAY_STORE_JSON_KEY != '' }}
         uses: r0adkll/upload-google-play@v1
