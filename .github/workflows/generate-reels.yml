@@ -6,6 +6,9 @@ on:
 permissions:
   contents: write
 
+env:
+  ACTIONS_RUNNER_FORCE_NODE24: "true"
+
 jobs:
   render-reels:
     runs-on: ubuntu-latest
@@ -17,27 +20,38 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Install ffmpeg
-        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - name: Install ffmpeg with librsvg support
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
 
-      - name: Generate media reels
+      - name: Generate sequential frames & 432Hz procedural audio
         run: node scripts/render_video_reels.mjs
 
-      - name: Convert SVG Reels to MP4 with ffmpeg
+      - name: Compile High-Fidelity MP4 Video (30 FPS + 432 Hz Stereo)
         run: |
           mkdir -p media-reels/mp4
-          # Convert vertical animated SVG to MP4 using ffmpeg (1080x1920, 30fps, 11 seconds)
-          ffmpeg -y -loop 1 -r 30 -t 11 -i media-reels/reel-vertical-coherence.svg -c:v libx264 -pix_fmt yuv420p -vf "scale=1080:1920" media-reels/mp4/chromasync-reel-vertical.mp4 || true
-          ffmpeg -y -loop 1 -r 30 -t 11 -i media-reels/reel-horizontal-coherence.svg -c:v libx264 -pix_fmt yuv420p -vf "scale=1920:1080" media-reels/mp4/chromasync-reel-horizontal.mp4 || true
+          ffmpeg -y \
+            -r 30 \
+            -i media-reels/frames/frame_%04d.svg \
+            -i media-reels/audio_432hz.wav \
+            -c:v libx264 \
+            -preset slow \
+            -crf 18 \
+            -pix_fmt yuv420p \
+            -c:a aac \
+            -b:a 192k \
+            -shortest \
+            media-reels/mp4/chromasync-reel-vertical-1080x1920.mp4
 
-      - name: Upload Media Reels Artifacts
+      - name: Upload High-Definition Video Reels Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: chromasync-social-reels
-          path: media-reels/
+          name: chromasync-hd-reels
+          path: media-reels/mp4/

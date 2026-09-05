@@ -154,7 +154,15 @@ export class UIController {
     BREATHING_PATTERNS.forEach(pattern => {
       const btn = document.createElement('button');
       btn.className = `pill-btn ${pattern.id === this.currentPatternId ? 'active' : ''}`;
-      btn.innerHTML = `<span class="name-full">${pattern.name}</span><span class="name-short">${pattern.shortName}</span>`;
+      const fullSpan = document.createElement('span');
+      fullSpan.className = 'name-full';
+      fullSpan.textContent = pattern.name;
+
+      const shortSpan = document.createElement('span');
+      shortSpan.className = 'name-short';
+      shortSpan.textContent = pattern.shortName;
+
+      btn.append(fullSpan, shortSpan);
       btn.title = `${pattern.name} — ${pattern.tagline}`;
       btn.setAttribute('role', 'radio');
       btn.setAttribute('aria-checked', pattern.id === this.currentPatternId ? 'true' : 'false');
@@ -196,8 +204,19 @@ export class UIController {
       btn.title = `${atmosphere.name} — ${atmosphere.scientificTarget}`;
       btn.setAttribute('role', 'radio');
       btn.setAttribute('aria-label', `${atmosphere.name} Atmosphere`);
-      btn.setAttribute('aria-checked', atmosphere.id === this.currentAtmosphereId ? 'true' : 'false');
-      btn.innerHTML = `<span class="atm-icon">${atmosphere.icon}</span> <span class="name-full">${atmosphere.name}</span><span class="name-short">${atmosphere.shortName}</span>`;
+      const iconSpan = document.createElement('span');
+      iconSpan.className = 'atm-icon';
+      iconSpan.textContent = atmosphere.icon;
+
+      const fullSpan = document.createElement('span');
+      fullSpan.className = 'name-full';
+      fullSpan.textContent = atmosphere.name;
+
+      const shortSpan = document.createElement('span');
+      shortSpan.className = 'name-short';
+      shortSpan.textContent = atmosphere.shortName;
+
+      btn.append(iconSpan, document.createTextNode(' '), fullSpan, shortSpan);
 
       btn.addEventListener('click', (e) => {
         e.stopPropagation();

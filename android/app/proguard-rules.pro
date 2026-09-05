@@ -12,10 +12,11 @@
 #   public *;
 #}
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# Preserve Capacitor Core & Plugins across R8 minification
+-keep public class * extends com.getcapacitor.Plugin { *; }
+-keep @com.getcapacitor.annotation.CapacitorPlugin public class * { *; }
+-keep class com.getcapacitor.** { *; }
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# Preserve line numbers and source files for symbolized crash reports
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile

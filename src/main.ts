@@ -10,6 +10,7 @@ import { AudioEngine } from './audio/AudioEngine';
 import { AccessibilityManager } from './ui/Accessibility';
 import { UIController } from './ui/UIController';
 import { KeyboardShortcuts } from './ui/KeyboardShortcuts';
+import { StudioRecorder } from './ui/StudioRecorder';
 import { App } from '@capacitor/app';
 
 class ChromasyncApp {
@@ -21,6 +22,7 @@ class ChromasyncApp {
   private audio: AudioEngine;
   private a11y: AccessibilityManager;
   private ui: UIController;
+  private studioRecorder: StudioRecorder;
 
   private canvas: HTMLCanvasElement;
   private isInitialized: boolean = false;
@@ -80,6 +82,9 @@ class ChromasyncApp {
       defaultAtmosphere
     );
 
+    // Studio Reel Exporter (GPU + Web Audio Recording)
+    this.studioRecorder = new StudioRecorder(this.canvas, this.audio);
+
     // Keyboard Shortcuts
     new KeyboardShortcuts({
       onTogglePlay: () => this.handleTogglePlay(),
@@ -93,6 +98,7 @@ class ChromasyncApp {
       onNextTuning: () => this.ui.toggleTuningDrawer(),
       onToggleOled: () => this.ui.toggleOledMode(),
       onToggleInfo: () => this.ui.toggleInfoDrawer(),
+      onRecordReel: () => this.studioRecorder.startRecording(11),
       onEscape: () => {
         this.ui.closeInfoDrawer();
         this.ui.closeTuningDrawer();

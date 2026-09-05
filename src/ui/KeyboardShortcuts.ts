@@ -7,6 +7,7 @@ export interface ShortcutHandlers {
   onNextTuning: () => void;
   onToggleOled?: () => void;
   onToggleInfo?: () => void;
+  onRecordReel?: () => void;
   onEscape?: () => void;
 }
 
@@ -63,6 +64,10 @@ export class KeyboardShortcuts {
         case 'KeyI':
           e.preventDefault();
           this.handlers.onToggleInfo?.();
+          break;
+        case 'KeyR':
+          e.preventDefault();
+          this.handlers.onRecordReel?.();
           break;
         case 'Escape':
           e.preventDefault();

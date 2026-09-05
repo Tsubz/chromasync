@@ -54,6 +54,18 @@ export class AudioEngine {
     this.isUnlocked = true;
   }
 
+  public getMediaStreamDestination(): MediaStreamAudioDestinationNode | null {
+    this.unlock();
+    if (!this.ctx || !this.masterGain) return null;
+    try {
+      const dest = this.ctx.createMediaStreamDestination();
+      this.masterGain.connect(dest);
+      return dest;
+    } catch {
+      return null;
+    }
+  }
+
   public update(breathScale: number, isPlaying: boolean): void {
     if (!this.isUnlocked || !this.synthChord || !this.soundEffects) return;
     this.synthChord.update(breathScale, isPlaying && !this.isMuted);
