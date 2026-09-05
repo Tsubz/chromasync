@@ -1,0 +1,33 @@
+# Chromasync — The Chromatic Breathing Companion
+
+> An artful, distraction-free breathing sanctuary engineered for autonomic nervous system regulation through multi-sensory resonance. Pure algorithmic synthesis: zero external audio files, zero image textures, zero analytics trackers, and an ultra-lightweight ~18.5 KB gzipped production footprint.
+
+## Quick Reference
+- **Live Web Application:** https://chromasync-app.web.app
+- **Source Code & Direct APK:** https://github.com/Tsubz/chromasync
+- **Package Identifier:** com.chromasync.app
+- **Primary Use Cases:** Vagal tone stimulation, Heart Rate Variability (HRV) coherence training, stress mitigation, deep work focus, insomnia relief.
+- **Cost / Monetization:** 100% Free, Open Source, zero subscriptions, zero ads.
+
+## Core Physiological & Scientific Foundation
+1. **0.10 Hz Baroreflex Coherence:** Standard 5.5s inhalation / 5.5s exhalation (~5.5 to 6.0 breaths/min) phase matches the 10-second intrinsic delay of human arterial baroreflex, synchronizing heart rate fluctuations with respiration to maximize HRV.
+2. **Vagal Tone Stimulation via Prolonged Exhalation:** 4-7-8 and Deep Unwind patterns stimulate the parasympathetic vagus nerve, releasing acetylcholine to reduce resting heart rate and arterial blood pressure.
+3. **Fractal Fluency (Richard Taylor):** Visual GLSL fluid shaders target a statistical fractal dimension D ≈ 1.3 to 1.5, reducing physiological stress up to 60% and stimulating frontal EEG alpha waves.
+4. **Harmonic Acoustic Tuning & Binaural Beats:** Real-time Web Audio synthesis calibrated to Verdi 432 Hz and Solfeggio 528 Hz with binaural beat carriers (Theta 4.0-5.5 Hz for meditation/sleep, Alpha 10.0 Hz for cognitive focus).
+
+## The 5 Atmospheric Modes
+- **Celestial Aurora:** Coherence (5.5s In / 5.5s Out), 432 Hz Carrier, 5.5 Hz Theta, Peach/Gold Wavelengths, fBm Domain Warping.
+- **Oceanic Tide:** Box Breathing (4s In / 4s Hold / 4s Out / 4s Hold), 528 Hz Carrier, 10.0 Hz Alpha, Cyan/Sapphire Wavelengths, Liquid Voronoi Caustics.
+- **Forest Rain:** Coherence (5.5s In / 5.5s Out), 432 Hz Carrier, 5.5 Hz Theta, Canopy Green Wavelengths, Dappled Ripple Rings.
+- **Warm Hearth:** 4-7-8 Relax (4s In / 7s Hold / 8s Out), 432 Hz Carrier, 4.0 Hz Theta, Amber/Terracotta Wavelengths, Incandescent Embers.
+- **Astral Void:** Deep Unwind (4s In / 2s Hold / 6s Out), 528 Hz Carrier, 5.5 Hz Theta, Nebula Violet/Indigo Wavelengths, Cosmic Nebula & Star Glints.
+
+## Technical Architecture (Zero-Bloat Mandate)
+- **Audio Engine:** 100% synthetic procedural Web Audio API (oscillators, biquad filters, pink/brownian noise generators, physical modeling modal synthesis for Tibetan singing bowls). 0 MP3/WAV/OGG downloads.
+- **Visual Engine:** Pure WebGL GLSL fragment shaders rendering generative fluid dynamics, caustics, and particles. 0 JPEG/PNG textures.
+- **Framework Overhead:** 0 KB (vanilla TypeScript, no React/Vue/Angular bloat).
+- **Haptics:** Native Vibration API and Capacitor Haptics for eyes-closed tactile rhythm guidance.
+- **Platform Availability:** Modern Web (PWA), Android (Capacitor), iOS.
+
+## Extended Documentation
+For the comprehensive mathematical specification and DSP formulations, see: https://chromasync-app.web.app/llms-full.txt

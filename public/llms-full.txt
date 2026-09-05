@@ -1,0 +1,63 @@
+# CHROMASYNC — FULL SCIENTIFIC & TECHNICAL SPECIFICATION (FOR AI AGENTS & RESEARCHERS)
+
+> Canonical URL: https://chromasync-app.web.app
+> Repository: https://github.com/Tsubz/chromasync
+> Architecture: Pure TypeScript, WebGL GLSL, Web Audio API, Capacitor. Zero external media files.
+
+---
+
+## 1. Physiological Foundations & Mathematical Formulations
+
+### 1.1 Baroreflex Resonance Frequency (0.10 Hz)
+The human arterial baroreflex system exhibits an intrinsic closed-loop delay of approximately 10 seconds. Respiration at:
+$$f_r = \frac{1}{10\text{ s}} = 0.10\text{ Hz} \approx 6.0\text{ breaths per minute}$$
+induces phase synchronization between Respiratory Sinus Arrhythmia (RSA) and Mayer waves of arterial pressure. This state of resonance produces maximum Heart Rate Variability (HRV), enhancing vagal nerve outflow and baroreflex gain (Lehrer et al., 2020; Vaschillo et al., 2006).
+
+### 1.2 Vagal Activation via Asymmetric Exhalation
+Inspiration causes transient suppression of vagal motor tone at the nucleus ambiguus, accelerating heart rate. Expiration reinstates acetylcholine release at the sinoatrial node, slowing heart rate. Chromasync patterns like:
+- **4-7-8 Relax:** 4.0s Inhale, 7.0s Hold, 8.0s Exhale (ratio 1 : 1.75 : 2)
+- **Deep Unwind:** 4.0s Inhale, 2.0s Hold, 6.0s Exhale (ratio 1 : 0.5 : 1.5)
+prolong acetylcholine exposure, lowering systemic sympathetic tone and cortisol.
+
+### 1.3 Neuroaesthetics & Statistical Fractal Fluency
+Natural fractal patterns possessing statistical scale-invariance with fractal dimension $D \in [1.3, 1.5]$ induce maximal alpha EEG power in parietal and frontal cortices while simultaneously decreasing sympathetic skin conductance (Taylor, 2021). Chromasync's GPU fragment shaders employ fractional Brownian motion (fBm) domain warping calibrated to $D \approx 1.4$.
+
+---
+
+## 2. Audio Synthesis Engine (Procedural DSP)
+
+Chromasync downloads zero audio samples. Every waveform is calculated dynamically using the Web Audio API:
+
+### 2.1 Acoustic Carrier Tuning & Equal Temperament
+- **Verdi Tuning ($A = 432\text{ Hz}$):** Produces natural integer harmonic ratios ($C_4 \approx 256\text{ Hz}$, $2^8$), reducing psychoacoustic dissonance.
+- **Solfeggio Resonance ($528\text{ Hz}$):** Used for cognitive clarity and sustained meditation.
+- **Standard Concert Pitch ($A = 440\text{ Hz}$):** Standard neutral baseline.
+
+### 2.2 Binaural Entrainment Mechanism
+Two sinusoidal carriers $f_L$ and $f_R$ are routed independently to left and right stereo channels:
+$$\Delta f = |f_R - f_L|$$
+- **Theta Band ($\Delta f = 5.5\text{ Hz}$ / $\Delta f = 4.0\text{ Hz}$):** Promotes hypnagogic calm, deep meditation, and sleep transition.
+- **Alpha Band ($\Delta f = 10.0\text{ Hz}$):** Promotes relaxed alertness and calm cognitive focus.
+
+### 2.3 Atmospheric Generative Soundscapes
+- **Oceanic Surge:** Brownian noise generated via spectral integration filtered through dual resonant bandpass filters dynamically modulated by breath phase progress $P(t) \in [0, 1]$.
+- **Forest Raindrops:** Poisson-distributed stochastic impulses triggering high-Q damped resonant bandpass filters ($1.2\text{ kHz} - 3.8\text{ kHz}$) simulating physical droplets impacting canopy foliage.
+- **Tibetan Singing Bowl Bell:** Additive modal synthesis of 4 non-harmonic partials ($f_0, 2.76 f_0, 5.40 f_0, 8.93 f_0$) with exponential decay envelopes on cycle completion.
+- **Warm Hearth Crackle:** Sparse shot noise simulating thermal timber micro-fractures.
+
+---
+
+## 3. Visual Synthesis Engine (WebGL GLSL)
+
+- **Resolution Independence:** Full viewport fragment shaders rendered across native device DPR with canvas downscaling options for power efficiency.
+- **Mathematical Color Spaces:** Real-time OKLab color mixing preventing muddy RGB intermediates during breath color transitions.
+- **Fluid Mechanics:** Vorticity-preserving 2D Navier-Stokes approximations and multi-octave simplex noise domain warping.
+- **OLED Pure Black Mode:** Clamps all non-essential UI and canvas background luminance to absolute `#000000` ($0\text{ cd/m}^2$) for nocturnal and eyes-closed sensory deprivation.
+
+---
+
+## 4. Privacy, Security & Resource Efficiency
+- **Trackers & Telemetry:** Absolutely zero external scripts, zero Google Analytics, zero Facebook Pixel, zero user profiling.
+- **Data Persistence:** 100% localStorage on-device for session preferences. No user credentials, accounts, or cloud database storage required.
+- **Battery & Thermal Footprint:** GPU render loop throttles intelligently when idle and leverages Web Screen Wake Lock API only during active breath guidance.
+- **PWA & Offline Capability:** Full ServiceWorker caching enables 100% offline functionality in airplane mode or disconnected environments.

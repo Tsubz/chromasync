@@ -1,0 +1,94 @@
+name: Build & Publish Direct Android APK Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_tag:
+        description: 'Release Tag (e.g. v1.0.0)'
+        required: true
+        default: 'v1.0.0'
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release-apk:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Setup Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'gradle'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install NPM dependencies
+        run: npm ci
+
+      - name: Build Web Assets & Sync to Capacitor
+        run: npm run cap:sync
+
+      - name: Make Gradle wrapper executable
+        run: chmod +x ./android/gradlew
+
+      - name: Build Android APK
+        working-directory: ./android
+        env:
+          BUILD_NUMBER: ${{ github.run_number }}
+          VERSION_NAME: ${{ github.event.inputs.version_tag || github.ref_name || '1.0.0' }}
+        run: ./gradlew assembleRelease
+
+      - name: Sign Android APK
+        id: sign_apk
+        uses: r0adkll/sign-android-release@v1
+        with:
+          releaseDirectory: android/app/build/outputs/apk/release
+          signingKey: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          keyAlias: ${{ secrets.ANDROID_KEY_ALIAS }}
+          keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
+
+      - name: Rename Signed APK for Distribution
+        run: |
+          mkdir -p release-dist
+          cp ${{ steps.sign_apk.outputs.signedReleaseFile }} release-dist/chromasync-v1.0.0-release.apk
+
+      - name: Upload Signed APK as Workflow Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: chromasync-android-apk
+          path: release-dist/chromasync-v1.0.0-release.apk
+
+      - name: Create or Update GitHub Release with APK
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/') || github.event.inputs.version_tag != ''
+        with:
+          tag_name: ${{ github.event.inputs.version_tag || github.ref_name }}
+          name: Chromasync ${{ github.event.inputs.version_tag || github.ref_name }}
+          body: |
+            ### Chromasync — The Chromatic Breathing Companion
+
+            **Instant Android Installation (Direct APK):**
+            Download and install `chromasync-v1.0.0-release.apk` below directly on any Android device without waiting for app store reviews.
+
+            - 🌌 **100% Procedural Synthesis:** Zero external audio files, zero image textures.
+            - 🫁 **0.10 Hz Baroreflex Coherence:** 5.5s inhalation / 5.5s exhalation autonomic nervous system regulation.
+            - ✨ **Acoustic Harmony:** 432 Hz / 528 Hz tuning with binaural entrainment.
+            - 🛡️ **Zero Tracking & Completely Free:** No ads, no subscriptions, no accounts.
+          files: release-dist/chromasync-v1.0.0-release.apk
