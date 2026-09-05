@@ -15,6 +15,7 @@ build/
 *.keystore
 *.jks
 google-services.json
+.firebase/
 
 # Android
 android/.gradle/
