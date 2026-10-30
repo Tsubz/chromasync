@@ -1,3 +1,4 @@
+import './fonts';
 import './style.css';
 import { BreathingEngine } from './core/BreathingEngine';
 import { SessionTimer } from './core/SessionTimer';
@@ -12,6 +13,9 @@ import { UIController } from './ui/UIController';
 import { KeyboardShortcuts } from './ui/KeyboardShortcuts';
 import { StudioRecorder } from './ui/StudioRecorder';
 import { App } from '@capacitor/app';
+import { applyStaticTranslations, getLocale, setLocale, t } from './i18n';
+import { Preferences } from './core/Preferences';
+import { SessionDurationMinutes } from './core/SessionTimer';
 
 class ChromasyncApp {
   private engine: BreathingEngine;
@@ -25,24 +29,32 @@ class ChromasyncApp {
   private studioRecorder: StudioRecorder;
 
   private canvas: HTMLCanvasElement;
-  private isInitialized: boolean = false;
 
   constructor() {
     this.canvas = document.getElementById('gl-canvas') as HTMLCanvasElement;
     if (!this.canvas) throw new Error('Canvas element not found');
 
-    const defaultAtmosphere = ATMOSPHERES[0];
-    const defaultPattern = BREATHING_PATTERNS.find(p => p.id === defaultAtmosphere.recommendedPatternId) ?? BREATHING_PATTERNS[0];
+    applyStaticTranslations();
+
+    // Restore the last session's settings, falling back to the first atmosphere and its paired rhythm
+    const defaultAtmosphere = ATMOSPHERES.find(a => a.id === Preferences.get('atmosphereId')) ?? ATMOSPHERES[0];
+    const defaultPattern = BREATHING_PATTERNS.find(p => p.id === Preferences.get('patternId'))
+      ?? BREATHING_PATTERNS.find(p => p.id === defaultAtmosphere.recommendedPatternId)
+      ?? BREATHING_PATTERNS[0];
+    const savedDuration = Preferences.get('durationMinutes');
+    const initialDuration: SessionDurationMinutes =
+      savedDuration === 3 || savedDuration === 5 || savedDuration === 10 ? savedDuration : 0;
 
     // Core systems
     this.engine = new BreathingEngine(defaultPattern.id);
-    this.timer = new SessionTimer(0);
+    this.timer = new SessionTimer(initialDuration);
     this.haptics = new HapticsManager();
     this.wakeLock = new WakeLockManager();
     this.renderer = new ShaderRenderer(this.canvas, defaultAtmosphere);
     this.canvas = this.renderer.getCanvas();
     this.audio = new AudioEngine();
     this.audio.setAtmosphere(defaultAtmosphere);
+    this.audio.setMuted(Preferences.get('muted') === true);
     this.a11y = new AccessibilityManager();
 
     // UI Manager
@@ -52,12 +64,15 @@ class ChromasyncApp {
         onToggleSound: () => this.handleToggleSound(),
         onPatternSelect: (patternId) => this.handlePatternChange(patternId),
         onAtmosphereSelect: (atmosphere) => this.handleAtmosphereChange(atmosphere),
-        onTimerSelect: (mins) => this.timer.setDuration(mins),
+        onTimerSelect: (mins) => {
+          this.timer.setDuration(mins);
+          Preferences.set('durationMinutes', mins);
+        },
         onToggleTuning: () => this.ui.toggleTuningDrawer(),
         onTuningSelect: (tuning, beat) => {
           this.audio.unlock();
           this.audio.setTuningAndBeat(tuning, beat ?? this.audio.getBinauralBeat());
-          this.a11y.announceMessage(`Tuning set to ${tuning} Hz`);
+          this.a11y.announceMessage(t('a11y.tuningSet', { hz: tuning }));
         },
         onRestoreHarmony: (atmosphere) => {
           this.handleAtmosphereChange(atmosphere);
@@ -76,11 +91,17 @@ class ChromasyncApp {
         },
         onTouchContact: (active, clientX, clientY) => {
           this.renderer.setTouchContact(active, clientX, clientY);
+        },
+        onToggleLanguage: () => {
+          setLocale(getLocale() === 'fr' ? 'en' : 'fr');
+          window.location.reload();
         }
       },
       defaultPattern,
       defaultAtmosphere
     );
+    this.ui.setDurationSelection(initialDuration);
+    this.ui.updateSoundState(this.audio.getIsMuted());
 
     // Studio Reel Exporter (GPU + Web Audio Recording)
     this.studioRecorder = new StudioRecorder(this.canvas, this.audio);
@@ -139,7 +160,13 @@ class ChromasyncApp {
     this.ui.updateAfterHarmonization(pairedAtmosphere, pattern);
 
     // 5. Screen reader announcement
-    this.a11y.announceMessage(`${pattern.name} active. Auto-harmonized with ${pairedAtmosphere.name} at ${pairedAtmosphere.recommendedTuning} Hz`);
+    this.a11y.announceMessage(t('a11y.patternActive', {
+      pattern: pattern.name,
+      atmosphere: pairedAtmosphere.name,
+      hz: pairedAtmosphere.recommendedTuning
+    }));
+
+    this.saveSelection(pairedAtmosphere.id, pattern.id);
   }
 
   private handleAtmosphereChange(atmosphere: Atmosphere): void {
@@ -158,14 +185,25 @@ class ChromasyncApp {
     this.ui.updateAfterHarmonization(atmosphere, pairedPattern);
 
     // 5. Announce to screen reader
-    this.a11y.announceMessage(`${atmosphere.name} active. Auto-tuned to ${atmosphere.recommendedTuning} Hz ${atmosphere.binauralLabel} with ${pairedPattern.name}`);
+    this.a11y.announceMessage(t('a11y.atmosphereActive', {
+      atmosphere: atmosphere.name,
+      hz: atmosphere.recommendedTuning,
+      beat: atmosphere.binauralLabel,
+      pattern: pairedPattern.name
+    }));
+
+    this.saveSelection(atmosphere.id, pairedPattern.id);
+  }
+
+  private saveSelection(atmosphereId: string, patternId: string): void {
+    Preferences.set('atmosphereId', atmosphereId);
+    Preferences.set('patternId', patternId);
   }
 
   private initEvents(): void {
     // Phase change notifications
-    this.engine.onPhaseTransition((_, toPhase) => {
-      const isEndOfCycle = this.engine.getState().phaseIndex === 0;
-      const isSessionFinished = this.timer.checkCycleCompletion(isEndOfCycle);
+    this.engine.onPhaseTransition((_, toPhase, isCycleComplete) => {
+      const isSessionFinished = this.timer.checkCycleCompletion(isCycleComplete);
 
       if (!isSessionFinished) {
         this.a11y.announcePhase(toPhase);
@@ -181,7 +219,7 @@ class ChromasyncApp {
       this.audio.strikeTibetanBowl();
       this.haptics.pulseCompletion();
       this.ui.showSessionComplete();
-      this.a11y.announceMessage('Session complete. Rest now, peace within.');
+      this.a11y.announceMessage(t('a11y.complete'));
     });
 
     // Window, viewport and orientation resize handling
@@ -194,14 +232,10 @@ class ChromasyncApp {
     window.visualViewport?.addEventListener('resize', handleResize, { passive: true });
     document.addEventListener('fullscreenchange', handleResize, { passive: true });
 
-    // First user gesture to unlock audio
+    // First user gesture unlocks audio. Starting the session is left to the gesture's own
+    // handler (tap / Space / play button) so the first tap does not start then pause.
     const unlockOnFirstTouch = () => {
       this.audio.unlock();
-      if (!this.isInitialized) {
-        this.isInitialized = true;
-        this.engine.start();
-        this.wakeLock.acquire();
-      }
       window.removeEventListener('pointerdown', unlockOnFirstTouch);
       window.removeEventListener('keydown', unlockOnFirstTouch);
     };
@@ -237,20 +271,26 @@ class ChromasyncApp {
 
   private handleTogglePlay(): void {
     this.audio.unlock();
+    const isStarting = !this.engine.getState().isPlaying;
+    if (isStarting && this.timer.getState().isComplete) {
+      // "Begin again" after a finished session restarts the countdown
+      this.timer.reset();
+    }
     const isPlaying = this.engine.togglePlay();
     if (isPlaying) {
       this.wakeLock.acquire();
-      this.a11y.announceMessage('Breathing resumed');
+      this.a11y.announceMessage(t('a11y.resumed'));
     } else {
       this.wakeLock.release();
-      this.a11y.announceMessage('Breathing paused');
+      this.a11y.announceMessage(t('a11y.paused'));
     }
   }
 
   private handleToggleSound(): void {
     const isMuted = this.audio.toggleMute();
+    Preferences.set('muted', isMuted);
     this.ui.updateSoundState(isMuted);
-    this.a11y.announceMessage(isMuted ? 'Sound muted' : 'Sound unmuted');
+    this.a11y.announceMessage(isMuted ? t('a11y.muted') : t('a11y.unmuted'));
   }
 
   private registerServiceWorker(): void {
@@ -272,6 +312,11 @@ class ChromasyncApp {
       this.engine.update(timestamp);
       const state = this.engine.getState();
       this.timer.update(timestamp, state.isPlaying);
+      // Touch pacing has no fixed cycle, so a finishing session ends once the lungs are empty
+      if (state.isTouchPacing && this.timer.getState().isFinishingCycle
+          && state.currentPhase.type === 'exhale' && state.breathScale <= 0.04) {
+        this.timer.checkCycleCompletion(true);
+      }
       const timerState = this.timer.getState();
 
       // 2. Render visual field

@@ -3,6 +3,7 @@ import { ATMOSPHERES, Atmosphere } from '../core/Atmospheres';
 import { BreathState } from '../core/BreathingEngine';
 import { SessionDurationMinutes, TimerState } from '../core/SessionTimer';
 import { TuningFrequency } from '../audio/SynthChord';
+import { t } from '../i18n';
 
 export interface UIControllerCallbacks {
   onTogglePlay: () => void;
@@ -17,6 +18,7 @@ export interface UIControllerCallbacks {
   onTouchPaceStart?: () => void;
   onTouchPaceEnd?: () => void;
   onTouchContact?: (active: boolean, clientX?: number, clientY?: number) => void;
+  onToggleLanguage?: () => void;
 }
 
 export class UIController {
@@ -79,12 +81,15 @@ export class UIController {
   private isOledActive: boolean = false;
   private isDrawerOpen: boolean = false;
   private isTuningDrawerOpen: boolean = false;
+  private hasStarted: boolean = false;
 
   // Touch & Pointer state
   private pointerDownTime: number = 0;
   private lastTapTime: number = 0;
   private touchHoldTimer: number | null = null;
   private isHoldingTouchPace: boolean = false;
+  private suppressNextTapToggle: boolean = false;
+  private oledToggledAt: number = 0;
 
   constructor(callbacks: UIControllerCallbacks, initialPattern: BreathingPattern, initialAtmosphere: Atmosphere) {
     this.callbacks = callbacks;
@@ -203,7 +208,7 @@ export class UIController {
       btn.className = `atmosphere-btn ${atmosphere.id === this.currentAtmosphereId ? 'active' : ''}`;
       btn.title = `${atmosphere.name} — ${atmosphere.scientificTarget}`;
       btn.setAttribute('role', 'radio');
-      btn.setAttribute('aria-label', `${atmosphere.name} Atmosphere`);
+      btn.setAttribute('aria-label', t('ui.atmosphereAria', { name: atmosphere.name }));
       const iconSpan = document.createElement('span');
       iconSpan.className = 'atm-icon';
       iconSpan.textContent = atmosphere.icon;
@@ -254,9 +259,7 @@ export class UIController {
         e.stopPropagation();
         this.callbacks.onUserInteraction();
         const mins = parseInt(btn.dataset.mins || '0', 10) as SessionDurationMinutes;
-        
-        buttons.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
+        this.setDurationSelection(mins);
         
         this.isSessionComplete = false;
         this.callbacks.onTimerSelect(mins);
@@ -348,20 +351,13 @@ export class UIController {
       this.callbacks.onUserInteraction();
       const durations: SessionDurationMinutes[] = [0, 3, 5, 10];
       const nextDuration = durations[(durations.indexOf(this.currentDuration) + 1) % durations.length];
-      this.currentDuration = nextDuration;
-
-      // Update pills in DOM if present
-      const buttons = this.timerPillsContainer?.querySelectorAll<HTMLButtonElement>('.timer-pill');
-      buttons?.forEach(btn => {
-        const mins = parseInt(btn.dataset.mins || '0', 10);
-        btn.classList.toggle('active', mins === nextDuration);
-      });
+      this.setDurationSelection(nextDuration);
 
       this.isSessionComplete = false;
       this.callbacks.onTimerSelect(nextDuration);
 
-      const label = nextDuration === 0 ? 'Illimitée (∞)' : `${nextDuration} minutes`;
-      this.toastMessage = `⏱️ Séance : ${label}`;
+      const label = nextDuration === 0 ? t('ui.sessionUnlimited') : t('ui.sessionMinutes', { mins: nextDuration });
+      this.toastMessage = t('ui.sessionToast', { label });
       if (this.toastTimer) clearTimeout(this.toastTimer);
       this.toastTimer = window.setTimeout(() => {
         this.toastMessage = null;
@@ -401,6 +397,11 @@ export class UIController {
       this.closeTuningDrawer();
     });
 
+    document.getElementById('btn-language')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.callbacks.onToggleLanguage?.();
+    });
+
     // Play/Pause button
     this.btnPlayPause?.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -436,6 +437,9 @@ export class UIController {
         if (this.touchHoldTimer) clearTimeout(this.touchHoldTimer);
         this.lastTapTime = 0;
         this.toggleOledMode();
+        // The first tap already toggled playback; undo it so a double-tap only switches OLED mode
+        this.suppressNextTapToggle = true;
+        this.callbacks.onTogglePlay();
         return;
       }
       this.lastTapTime = now;
@@ -501,7 +505,9 @@ export class UIController {
       } else if (this.currentPatternId !== 'free_flow') {
         // In preset modes: short click (< 220ms) toggles play/pause
         const pressDuration = performance.now() - this.pointerDownTime;
-        if (pressDuration < 220) {
+        if (this.suppressNextTapToggle) {
+          this.suppressNextTapToggle = false;
+        } else if (pressDuration < 220) {
           this.isSessionComplete = false;
           this.callbacks.onTogglePlay();
         }
@@ -515,7 +521,8 @@ export class UIController {
 
     // Global tap-to-wake from OLED mode
     document.addEventListener('click', () => {
-      if (this.isOledActive) {
+      // Ignore the click generated by the double-tap that just enabled OLED mode
+      if (this.isOledActive && performance.now() - this.oledToggledAt > 400) {
         this.exitOledMode();
       }
     });
@@ -621,13 +628,13 @@ export class UIController {
         tuningIcon.textContent = isFullyHarmonized ? '✨' : '∿';
       }
       this.tuningText.textContent = `${this.currentTuning} Hz`;
-      this.tuningStatusTag.textContent = isFullyHarmonized ? 'Harmonisé' : 'Manuel';
+      this.tuningStatusTag.textContent = isFullyHarmonized ? t('harmony.harmonized') : t('harmony.custom');
 
       this.btnTuning.classList.toggle('is-harmonized', isFullyHarmonized);
       this.btnTuning.classList.toggle('is-custom', !isFullyHarmonized);
       this.btnTuning.title = isFullyHarmonized 
-        ? `Harmonisé avec ${currentAtm.name} (${this.currentTuning} Hz) (T)`
-        : `Accord personnalisé (${this.currentTuning} Hz) — Cliquez pour harmoniser (T)`;
+        ? t('harmony.titleHarmonized', { name: currentAtm.name, hz: this.currentTuning })
+        : t('harmony.titleCustom', { hz: this.currentTuning });
     }
 
     // Update Tuning Drawer Status Banner
@@ -636,17 +643,17 @@ export class UIController {
       this.harmonyStatusBanner.classList.toggle('is-custom', !isFullyHarmonized);
 
       if (isFullyHarmonized) {
-        this.harmonyStatusText.textContent = `✨ En parfaite résonance avec ${currentAtm.name}`;
+        this.harmonyStatusText.textContent = t('harmony.inResonance', { name: currentAtm.name });
         this.btnRestoreHarmony.classList.add('hidden');
       } else {
-        const reason = !isFreqMatch 
-          ? `Fréquence ${this.currentTuning}Hz vs recommandée ${currentAtm.recommendedTuning}Hz`
-          : !isPatternMatch 
-          ? `Rythme non apparié à ${currentAtm.name}`
-          : `Battement binaural personnalisé`;
-        this.harmonyStatusText.textContent = `⚠️ Personnalisé : ${reason}`;
+        const reason = !isFreqMatch
+          ? t('harmony.reasonFreq', { hz: this.currentTuning, rec: currentAtm.recommendedTuning })
+          : !isPatternMatch
+          ? t('harmony.reasonPattern', { name: currentAtm.name })
+          : t('harmony.reasonBeat');
+        this.harmonyStatusText.textContent = t('harmony.customReason', { reason });
         this.btnRestoreHarmony.classList.remove('hidden');
-        this.btnRestoreHarmony.textContent = `✨ Rétablir l'Harmonie (${currentAtm.recommendedTuning} Hz)`;
+        this.btnRestoreHarmony.textContent = t('harmony.restore', { hz: currentAtm.recommendedTuning });
       }
     }
 
@@ -656,7 +663,7 @@ export class UIController {
         this.btnInfoRestore.classList.add('hidden');
       } else {
         this.btnInfoRestore.classList.remove('hidden');
-        this.btnInfoRestore.textContent = `✨ Rétablir l'Harmonie (${currentAtm.recommendedTuning} Hz · ${currentAtm.binauralLabel})`;
+        this.btnInfoRestore.textContent = t('harmony.restoreFull', { hz: currentAtm.recommendedTuning, beat: currentAtm.binauralLabel });
       }
     }
 
@@ -684,7 +691,7 @@ export class UIController {
     this.closeInfoDrawer();
 
     // Show celebratory toast
-    this.toastMessage = `✨ Harmonie Rétablie : ${currentAtm.name} (${currentAtm.recommendedTuning} Hz · ${currentAtm.binauralLabel})`;
+    this.toastMessage = t('harmony.restored', { name: currentAtm.name, hz: currentAtm.recommendedTuning, beat: currentAtm.binauralLabel });
     if (this.toastTimer) clearTimeout(this.toastTimer);
     this.toastTimer = window.setTimeout(() => {
       this.toastMessage = null;
@@ -715,6 +722,7 @@ export class UIController {
 
   public toggleOledMode(): boolean {
     this.isOledActive = !this.isOledActive;
+    this.oledToggledAt = performance.now();
     if (this.isOledActive) {
       document.body.classList.add('oled-black-active');
       this.btnOled?.classList.add('active');
@@ -762,12 +770,12 @@ export class UIController {
     if (this.infoAtmIcon) this.infoAtmIcon.textContent = currentAtm.icon;
     if (this.infoAtmTitle) this.infoAtmTitle.textContent = `${currentAtm.name} (${currentAtm.recommendedTuning} Hz)`;
     if (this.infoAtmDesc) this.infoAtmDesc.textContent = currentAtm.description;
-    if (this.infoAtmSource) this.infoAtmSource.textContent = `Source: ${currentAtm.scientificSource}`;
+    if (this.infoAtmSource) this.infoAtmSource.textContent = t('ui.source', { source: currentAtm.scientificSource });
 
     if (this.infoPatternIcon) this.infoPatternIcon.textContent = '🫁';
     if (this.infoPatternTitle) this.infoPatternTitle.textContent = `${currentPat.name} — ${currentPat.tagline}`;
     if (this.infoPatternDesc) this.infoPatternDesc.textContent = currentPat.description;
-    if (this.infoPatternSource) this.infoPatternSource.textContent = `Source: ${currentPat.scientificSource}`;
+    if (this.infoPatternSource) this.infoPatternSource.textContent = t('ui.source', { source: currentPat.scientificSource });
   }
 
   public updateAfterHarmonization(atmosphere: Atmosphere, pattern: BreathingPattern): void {
@@ -798,16 +806,18 @@ export class UIController {
 
   public updateState(state: BreathState, timerState?: TimerState): void {
     if (this.isSessionComplete) {
-      if (this.phaseLabel) this.phaseLabel.textContent = 'Peace within';
-      if (this.phaseSubtext) this.phaseSubtext.textContent = 'Session Complete · Tap anywhere to begin again';
+      if (this.phaseLabel) this.phaseLabel.textContent = t('ui.peaceWithin');
+      if (this.phaseSubtext) this.phaseSubtext.textContent = t('ui.completeSubtext');
       if (this.ringProgress) this.ringProgress.style.strokeDashoffset = '0';
       return;
     }
 
+    if (state.isPlaying) this.hasStarted = true;
+
     // Update central phase labels
     if (this.phaseLabel) {
       if (!state.isPlaying) {
-        this.phaseLabel.textContent = 'Paused';
+        this.phaseLabel.textContent = this.hasStarted ? t('ui.paused') : t('ui.beginTitle');
       } else {
         this.phaseLabel.textContent = state.currentPhase.label;
       }
@@ -817,9 +827,9 @@ export class UIController {
       if (this.toastMessage) {
         this.phaseSubtext.textContent = this.toastMessage;
       } else if (!state.isPlaying) {
-        this.phaseSubtext.textContent = 'Click anywhere or press Space to resume';
+        this.phaseSubtext.textContent = this.hasStarted ? t('ui.resumeHint') : t('ui.beginHint');
       } else if (timerState && timerState.isFinishingCycle) {
-        this.phaseSubtext.textContent = `${state.currentPhase.subtext} · Completing final breath...`;
+        this.phaseSubtext.textContent = `${state.currentPhase.subtext} · ${t('ui.finalBreath')}`;
       } else if (timerState && timerState.isActive) {
         const mins = Math.floor(timerState.remainingSeconds / 60);
         const secs = Math.floor(timerState.remainingSeconds % 60);
@@ -844,11 +854,11 @@ export class UIController {
       if (state.isPlaying) {
         iconPlay?.classList.add('hidden');
         iconPause?.classList.remove('hidden');
-        this.playPauseText.textContent = 'Pause';
+        this.playPauseText.textContent = t('ui.pause');
       } else {
         iconPlay?.classList.remove('hidden');
         iconPause?.classList.add('hidden');
-        this.playPauseText.textContent = 'Breathe';
+        this.playPauseText.textContent = t('ui.breathe');
       }
     }
   }
@@ -856,15 +866,23 @@ export class UIController {
   public showSessionComplete(): void {
     this.isSessionComplete = true;
     document.body.classList.add('sleep-dimmer-active');
-    if (this.phaseLabel) this.phaseLabel.textContent = 'Rest now';
-    if (this.phaseSubtext) this.phaseSubtext.textContent = 'Peace within · Tap anywhere to wake';
+    if (this.phaseLabel) this.phaseLabel.textContent = t('ui.restNow');
+    if (this.phaseSubtext) this.phaseSubtext.textContent = t('ui.restSubtext');
     if (this.btnPlayPause && this.playPauseText) {
       const iconPlay = this.btnPlayPause.querySelector('.icon-play');
       const iconPause = this.btnPlayPause.querySelector('.icon-pause');
       iconPlay?.classList.remove('hidden');
       iconPause?.classList.add('hidden');
-      this.playPauseText.textContent = 'Begin Again';
+      this.playPauseText.textContent = t('ui.beginAgain');
     }
+  }
+
+  public setDurationSelection(minutes: SessionDurationMinutes): void {
+    this.currentDuration = minutes;
+    const buttons = this.timerPillsContainer?.querySelectorAll<HTMLButtonElement>('.timer-pill');
+    buttons?.forEach(btn => {
+      btn.classList.toggle('active', parseInt(btn.dataset.mins || '0', 10) === minutes);
+    });
   }
 
   public wakeFromSleepDimmer(): void {
@@ -876,7 +894,7 @@ export class UIController {
       this.currentTuning = tuning;
       this.tuningText.textContent = `${tuning} Hz`;
       if (this.btnTuning) {
-        this.btnTuning.title = `Harmonie Fréquentielle: ${tuning} Hz ${binauralLabel ? `· ${binauralLabel}` : ''} (T)`;
+        this.btnTuning.title = t('harmony.badgeTitle', { hz: tuning, beat: binauralLabel ? ` · ${binauralLabel}` : '' });
       }
     }
     this.updateHarmonyState();
