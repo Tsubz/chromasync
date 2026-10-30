@@ -38,8 +38,17 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
+      - name: Resolve release version
+        id: version
+        env:
+          VERSION_TAG: ${{ github.event.inputs.version_tag || github.ref_name }}
+        run: echo "tag=$VERSION_TAG" >> "$GITHUB_OUTPUT"
+
       - name: Install NPM dependencies
         run: npm ci
+
+      - name: Type check & unit tests
+        run: npm run typecheck && npm test
 
       - name: Build Web Assets & Sync to Capacitor
         run: npm run cap:sync
@@ -51,7 +60,7 @@ jobs:
         working-directory: ./android
         env:
           BUILD_NUMBER: ${{ github.run_number }}
-          VERSION_NAME: ${{ github.event.inputs.version_tag || github.ref_name || '1.0.0' }}
+          VERSION_NAME: ${{ steps.version.outputs.tag }}
         run: ./gradlew assembleRelease
 
       - name: Sign Android APK
@@ -67,28 +76,28 @@ jobs:
       - name: Rename Signed APK for Distribution
         run: |
           mkdir -p release-dist
-          cp ${{ steps.sign_apk.outputs.signedReleaseFile }} release-dist/chromasync-v1.0.0-release.apk
+          cp ${{ steps.sign_apk.outputs.signedReleaseFile }} release-dist/chromasync-${{ steps.version.outputs.tag }}-release.apk
 
       - name: Upload Signed APK as Workflow Artifact
         uses: actions/upload-artifact@v4
         with:
           name: chromasync-android-apk
-          path: release-dist/chromasync-v1.0.0-release.apk
+          path: release-dist/chromasync-${{ steps.version.outputs.tag }}-release.apk
 
       - name: Create or Update GitHub Release with APK
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/') || github.event.inputs.version_tag != ''
         with:
-          tag_name: ${{ github.event.inputs.version_tag || github.ref_name }}
-          name: Chromasync ${{ github.event.inputs.version_tag || github.ref_name }}
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: Chromasync ${{ steps.version.outputs.tag }}
           body: |
             ### Chromasync — The Chromatic Breathing Companion
 
             **Instant Android Installation (Direct APK):**
-            Download and install `chromasync-v1.0.0-release.apk` below directly on any Android device without waiting for app store reviews.
+            Download and install `chromasync-${{ steps.version.outputs.tag }}-release.apk` below directly on any Android device without waiting for app store reviews.
 
             - 🌌 **100% Procedural Synthesis:** Zero external audio files, zero image textures.
             - 🫁 **0.10 Hz Baroreflex Coherence:** 5.5s inhalation / 5.5s exhalation autonomic nervous system regulation.
             - ✨ **Acoustic Harmony:** 432 Hz / 528 Hz tuning with binaural entrainment.
             - 🛡️ **Zero Tracking & Completely Free:** No ads, no subscriptions, no accounts.
-          files: release-dist/chromasync-v1.0.0-release.apk
+          files: release-dist/chromasync-${{ steps.version.outputs.tag }}-release.apk

@@ -11,7 +11,7 @@
 
 ### Post Title
 ```
-Show HN: Chromasync – 18KB breathing sanctuary with WebGL shaders and real-time DSP (No MP3s, no subscriptions)
+Show HN: Chromasync – 40 KB breathing sanctuary with WebGL shaders and real-time DSP (No MP3s, no subscriptions)
 ```
 
 ### Post Body
@@ -26,7 +26,7 @@ Chromasync is a single-purpose chromatic breathing companion engineered with a z
 There are no .mp3, .wav, or .ogg files. Every nature soundscape (rain Poisson impulses, oceanic Brownian noise filters, singing bowl modal synthesis) and acoustic carrier (432 Hz / 528 Hz binaural beats) is computed in real time on the Web Audio API.
 
 2. Zero Image Textures:
-All visual fluid dynamics, liquid caustics, and particle fields are rendered directly on the GPU via custom WebGL GLSL fragment shaders (~18.5 KB gzipped production web bundle).
+All visual fluid dynamics, liquid caustics, and particle fields are rendered directly on the GPU via custom WebGL GLSL fragment shaders (~40 KB gzipped production web bundle).
 
 3. 0.10 Hz Baroreflex Coherence:
 The default respiration cycle is calibrated to 5.5s inhalation / 5.5s exhalation (~6 breaths/min), matching the ~10-second intrinsic delay of the human arterial baroreflex loop to maximize Heart Rate Variability (HRV) and stimulate parasympathetic vagal tone (Lehrer et al., 2020).
@@ -65,7 +65,7 @@ Submit pull requests to these highly crawled GitHub repositories to gain permane
 **URL:** https://github.com/hemanth/awesome-pwa  
 **Section:** Applications
 ```markdown
-- [Chromasync](https://chromasync-app.web.app) - Ultra-lightweight (18.5 KB) offline-first PWA for cardiorespiratory baroreflex coherence with WebGL and Web Audio.
+- [Chromasync](https://chromasync-app.web.app) - Ultra-lightweight (~40 KB) offline-first PWA for cardiorespiratory baroreflex coherence with WebGL and Web Audio.
 ```
 
 ---
@@ -105,7 +105,7 @@ Description: |-
 
 ### Title
 ```
-I built a zero-bloat 0.10 Hz HRV baroreflex resonance tool with procedural 432/528Hz audio (No subscription, 18KB)
+I built a zero-bloat 0.10 Hz HRV baroreflex resonance tool with procedural 432/528Hz audio (No subscription, 40 KB)
 ```
 
 ### Body
@@ -131,7 +131,7 @@ Hope it helps your daily HRV and meditation protocols.
 
 **Visual:** Screen capture of Chromasync in full screen. The breath guide ring gently expands as golden peach fluid flows outward. Soft, ethereal 432 Hz drone with subtle oceanic swell.
 
-- **Hook (0-3s):** "Most meditation apps are 400 MB and want $14/month. This entire app is 18 KB."
+- **Hook (0-3s):** "Most meditation apps are 400 MB and want $14/month. This entire app is 40 KB."
 - **Problem (3-7s):** "No audio files. No background images. No account required."
 - **Demonstration (7-15s):** "Every soundwave and color transition is computed mathematically in real time on your device using WebGL shaders and Web Audio DSP."
 - **Science (15-22s):** "Calibrated to 0.10 Hz — the exact rhythm that syncs your breathing with your blood pressure baroreflex for maximum Heart Rate Variability."

@@ -1,6 +1,6 @@
 # Chromasync — The Chromatic Breathing Companion
 
-> An artful, distraction-free breathing sanctuary engineered for autonomic nervous system regulation through multi-sensory resonance. Pure algorithmic synthesis: zero external audio files, zero image textures, zero analytics trackers, and an ultra-lightweight ~18.5 KB gzipped production footprint.
+> An artful, distraction-free breathing sanctuary engineered for autonomic nervous system regulation through multi-sensory resonance. Pure algorithmic synthesis: zero external audio files, zero image textures, zero analytics trackers, and an ultra-lightweight ~40 KB gzipped production footprint.
 
 ## Quick Reference
 - **Live Web Application:** https://chromasync-app.web.app

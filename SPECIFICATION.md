@@ -4,7 +4,7 @@
 > **Application Name:** Chromasync — The Chromatic Breathing Companion  
 > **Bundle / Application ID:** `com.chromasync.app`  
 > **Platform Targets:** Modern Web (PWA), Android (APK/AAB), iOS (Xcode/IPA)  
-> **Design Philosophy:** Single-purpose, artful, zero external media files, zero bloat, pure algorithmic visual and audio synthesis (~18.5 KB gzipped production web footprint).
+> **Design Philosophy:** Single-purpose, artful, zero external media files, zero bloat, pure algorithmic visual and audio synthesis (~40 KB gzipped production web footprint).
 
 ---
 

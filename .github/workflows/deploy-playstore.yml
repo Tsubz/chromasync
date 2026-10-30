@@ -20,6 +20,9 @@ on:
 jobs:
   build-and-release-android:
     runs-on: ubuntu-latest
+    # `secrets` cannot be used in a step `if:`, so it is exposed through the job env
+    env:
+      PLAY_STORE_JSON_KEY: ${{ secrets.PLAY_STORE_JSON_KEY }}
 
     steps:
       - name: Checkout repository
@@ -43,6 +46,9 @@ jobs:
 
       - name: Install NPM dependencies
         run: npm ci
+
+      - name: Type check & unit tests
+        run: npm run typecheck && npm test
 
       - name: Build Web Assets & Sync to Capacitor
         run: npm run cap:sync
@@ -68,7 +74,7 @@ jobs:
           keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
 
       - name: Upload to Google Play
-        if: ${{ secrets.PLAY_STORE_JSON_KEY != '' }}
+        if: ${{ env.PLAY_STORE_JSON_KEY != '' }}
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJsonPlainText: ${{ secrets.PLAY_STORE_JSON_KEY }}
