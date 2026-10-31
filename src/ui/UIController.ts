@@ -4,6 +4,10 @@ import { BreathState } from '../core/BreathingEngine';
 import { SessionDurationMinutes, TimerState } from '../core/SessionTimer';
 import { TuningFrequency } from '../audio/SynthChord';
 import { t } from '../i18n';
+import { CanvasGestures } from './CanvasGestures';
+import { enableSwipeToDismiss } from './DrawerSwipe';
+import { BreathSettings } from '../core/BreathSettings';
+import { resonanceTextParams } from '../core/Patterns';
 
 export interface UIControllerCallbacks {
   onTogglePlay: () => void;
@@ -83,12 +87,7 @@ export class UIController {
   private isTuningDrawerOpen: boolean = false;
   private hasStarted: boolean = false;
 
-  // Touch & Pointer state
-  private pointerDownTime: number = 0;
-  private lastTapTime: number = 0;
-  private touchHoldTimer: number | null = null;
-  private isHoldingTouchPace: boolean = false;
-  private suppressNextTapToggle: boolean = false;
+  // When OLED mode was last toggled (ignores the click of the enabling double-tap)
   private oledToggledAt: number = 0;
 
   constructor(callbacks: UIControllerCallbacks, initialPattern: BreathingPattern, initialAtmosphere: Atmosphere) {
@@ -143,9 +142,10 @@ export class UIController {
     this.initAtmosphereSwatches();
     this.initTimerPills();
     this.initTuningDrawer();
+    this.initRhythmSettings();
     this.initEventListeners();
-    this.setupDrawerSwipeDismiss(this.infoDrawer, () => this.closeInfoDrawer());
-    this.setupDrawerSwipeDismiss(this.tuningDrawer, () => this.closeTuningDrawer());
+    enableSwipeToDismiss(this.infoDrawer, () => this.closeInfoDrawer());
+    enableSwipeToDismiss(this.tuningDrawer, () => this.closeTuningDrawer());
     this.resetIdleTimer();
     this.updateTuningBadge(initialAtmosphere.recommendedTuning, initialAtmosphere.binauralLabel);
     this.updateInfoDrawer(initialAtmosphere, initialPattern);
@@ -186,6 +186,34 @@ export class UIController {
 
       this.patternPillsContainer?.appendChild(btn);
     });
+  }
+
+  /** Resonance pace slider and gentle-holds toggle in the info drawer. */
+  private initRhythmSettings(): void {
+    const slider = document.getElementById('resonance-bpm') as HTMLInputElement | null;
+    const valueText = document.getElementById('resonance-bpm-value');
+    const gentle = document.getElementById('gentle-holds') as HTMLInputElement | null;
+
+    const render = () => {
+      if (slider) slider.value = String(BreathSettings.resonanceBpm);
+      if (valueText) valueText.textContent = t('settings.resonanceValue', resonanceTextParams());
+      if (gentle) gentle.checked = BreathSettings.gentleHolds;
+    };
+
+    slider?.addEventListener('input', () => {
+      BreathSettings.resonanceBpm = parseFloat(slider.value);
+    });
+    gentle?.addEventListener('change', () => {
+      BreathSettings.gentleHolds = gentle.checked;
+    });
+
+    // Pattern names include the pace ("5.5s Coherence"), so labels are rebuilt on change
+    BreathSettings.onChange(() => {
+      render();
+      this.initPills();
+      this.updateInfoDrawer();
+    });
+    render();
   }
 
   private updatePillsSelection(): void {
@@ -410,114 +438,24 @@ export class UIController {
       this.callbacks.onTogglePlay();
     });
 
-    // Interactive Canvas: Tap vs Double-Tap vs Touch-Pacer Hold vs Horizontal Swipe
-    const canvas = document.getElementById('gl-canvas');
-    let canvasStartX = 0;
-    let canvasStartY = 0;
-    let canvasStartTime = 0;
-    let hasSwiped = false;
-    
-    const handlePointerDown = (e: PointerEvent) => {
-      if (this.isOledActive) {
-        this.exitOledMode();
-        return;
-      }
-
-      this.callbacks.onUserInteraction();
-      this.wakeFromSleepDimmer();
-      this.pointerDownTime = performance.now();
-      canvasStartX = e.clientX;
-      canvasStartY = e.clientY;
-      canvasStartTime = performance.now();
-      hasSwiped = false;
-      const now = performance.now();
-
-      // Double-tap detection (< 300ms) toggles OLED Noir Mode
-      if (now - this.lastTapTime < 300) {
-        if (this.touchHoldTimer) clearTimeout(this.touchHoldTimer);
-        this.lastTapTime = 0;
-        this.toggleOledMode();
-        // The first tap already toggled playback; undo it so a double-tap only switches OLED mode
-        this.suppressNextTapToggle = true;
+    new CanvasGestures(document.getElementById('gl-canvas'), {
+      isOledActive: () => this.isOledActive,
+      exitOled: () => this.exitOledMode(),
+      toggleOled: () => this.toggleOledMode(),
+      onInteraction: () => {
+        this.callbacks.onUserInteraction();
+        this.wakeFromSleepDimmer();
+      },
+      isFreeFlow: () => this.currentPatternId === 'free_flow',
+      onTap: () => {
+        this.isSessionComplete = false;
         this.callbacks.onTogglePlay();
-        return;
-      }
-      this.lastTapTime = now;
-
-      // Report contact point for WebGL bioluminescent bloom
-      this.callbacks.onTouchContact?.(true, e.clientX, e.clientY);
-
-      // In free_flow mode: instantaneous tactile inhale response without deadzone
-      if (this.currentPatternId === 'free_flow') {
-        this.isHoldingTouchPace = true;
-        this.callbacks.onTouchPaceStart?.();
-      } else {
-        // Hold > 220ms triggers Touch-Pacer (interactive tactile breath) in preset modes
-        this.touchHoldTimer = window.setTimeout(() => {
-          this.isHoldingTouchPace = true;
-          this.callbacks.onTouchPaceStart?.();
-        }, 220);
-      }
-    };
-
-    const handlePointerMove = (e: PointerEvent) => {
-      // Check horizontal swipe on canvas to cycle atmospheres
-      if (!this.isHoldingTouchPace && !hasSwiped) {
-        const dx = e.clientX - canvasStartX;
-        const dy = e.clientY - canvasStartY;
-        const elapsed = performance.now() - canvasStartTime;
-        if (Math.abs(dx) > 65 && Math.abs(dx) > 1.6 * Math.abs(dy) && elapsed < 400) {
-          hasSwiped = true;
-          if (this.touchHoldTimer) {
-            clearTimeout(this.touchHoldTimer);
-            this.touchHoldTimer = null;
-          }
-          if (dx < 0) {
-            this.cycleNextAtmosphere();
-          } else {
-            this.cyclePrevAtmosphere();
-          }
-          return;
-        }
-      }
-
-      if (this.isHoldingTouchPace) {
-        this.callbacks.onTouchContact?.(true, e.clientX, e.clientY);
-      }
-    };
-
-    const handlePointerUp = () => {
-      if (this.touchHoldTimer) {
-        clearTimeout(this.touchHoldTimer);
-        this.touchHoldTimer = null;
-      }
-
-      this.callbacks.onTouchContact?.(false);
-
-      if (hasSwiped) {
-        hasSwiped = false;
-        return;
-      }
-
-      if (this.isHoldingTouchPace) {
-        this.isHoldingTouchPace = false;
-        this.callbacks.onTouchPaceEnd?.();
-      } else if (this.currentPatternId !== 'free_flow') {
-        // In preset modes: short click (< 220ms) toggles play/pause
-        const pressDuration = performance.now() - this.pointerDownTime;
-        if (this.suppressNextTapToggle) {
-          this.suppressNextTapToggle = false;
-        } else if (pressDuration < 220) {
-          this.isSessionComplete = false;
-          this.callbacks.onTogglePlay();
-        }
-      }
-    };
-
-    canvas?.addEventListener('pointerdown', handlePointerDown);
-    canvas?.addEventListener('pointermove', handlePointerMove);
-    window.addEventListener('pointerup', handlePointerUp);
-    window.addEventListener('pointercancel', handlePointerUp);
+      },
+      onHoldStart: () => this.callbacks.onTouchPaceStart?.(),
+      onHoldEnd: () => this.callbacks.onTouchPaceEnd?.(),
+      onContact: (active, x, y) => this.callbacks.onTouchContact?.(active, x, y),
+      onSwipe: direction => (direction < 0 ? this.cycleNextAtmosphere() : this.cyclePrevAtmosphere())
+    });
 
     // Global tap-to-wake from OLED mode
     document.addEventListener('click', () => {
@@ -537,81 +475,6 @@ export class UIController {
     window.addEventListener('mousemove', resetActivity, { passive: true });
     window.addEventListener('touchstart', resetActivity, { passive: true });
     window.addEventListener('pointermove', resetActivity, { passive: true });
-  }
-
-  private setupDrawerSwipeDismiss(drawer: HTMLElement | null, onClose: () => void): void {
-    if (!drawer) return;
-    const content = drawer.querySelector<HTMLElement>('.drawer-content');
-    const handle = drawer.querySelector<HTMLElement>('.drawer-handle');
-    const backdrop = drawer.querySelector<HTMLElement>('.drawer-backdrop');
-    if (!content) return;
-
-    let startY = 0;
-    let currentY = 0;
-    let isDragging = false;
-
-    const onPointerDown = (e: PointerEvent) => {
-      const target = e.target as HTMLElement;
-      const rect = content.getBoundingClientRect();
-      const isTopArea = (e.clientY - rect.top) < 70;
-      if (!handle?.contains(target) && !target.closest('.drawer-header') && !isTopArea) {
-        return;
-      }
-      startY = e.clientY;
-      currentY = e.clientY;
-      isDragging = true;
-      content.style.transition = 'none';
-      try { content.setPointerCapture?.(e.pointerId); } catch {}
-    };
-
-    const onPointerMove = (e: PointerEvent) => {
-      if (!isDragging) return;
-      currentY = e.clientY;
-      const dy = currentY - startY;
-      if (dy > 0) {
-        content.style.transform = `translateY(${dy}px)`;
-        if (backdrop) {
-          backdrop.style.opacity = `${Math.max(0.15, 1 - dy / 260)}`;
-        }
-      }
-    };
-
-    const onPointerUp = (e: PointerEvent) => {
-      if (!isDragging) return;
-      isDragging = false;
-      try { content.releasePointerCapture?.(e.pointerId); } catch {}
-      const dy = currentY - startY;
-
-      if (dy > 70) {
-        // Dismiss downward smoothly
-        content.style.transition = 'transform 0.22s cubic-bezier(0.16, 1, 0.3, 1)';
-        content.style.transform = 'translateY(100%)';
-        window.setTimeout(() => {
-          onClose();
-          content.style.transition = '';
-          content.style.transform = '';
-          if (backdrop) backdrop.style.opacity = '';
-        }, 220);
-      } else {
-        // Bounce back up
-        content.style.transition = 'transform 0.26s cubic-bezier(0.16, 1, 0.3, 1)';
-        content.style.transform = 'translateY(0)';
-        if (backdrop) {
-          backdrop.style.transition = 'opacity 0.26s ease';
-          backdrop.style.opacity = '';
-        }
-        window.setTimeout(() => {
-          content.style.transition = '';
-          content.style.transform = '';
-          if (backdrop) backdrop.style.transition = '';
-        }, 260);
-      }
-    };
-
-    content.addEventListener('pointerdown', onPointerDown);
-    window.addEventListener('pointermove', onPointerMove);
-    window.addEventListener('pointerup', onPointerUp);
-    window.addEventListener('pointercancel', onPointerUp);
   }
 
   public updateHarmonyState(): void {
@@ -952,6 +815,11 @@ export class UIController {
 
   public isOledModeActive(): boolean {
     return this.isOledActive;
+  }
+
+  /** True once OLED mode has fully faded the canvas out, so rendering can stop. */
+  public isCanvasHidden(): boolean {
+    return this.isOledActive && performance.now() - this.oledToggledAt > 1000;
   }
 
   public selectPatternByIndex(idx: number): void {

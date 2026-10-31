@@ -248,11 +248,28 @@
               <span class="source-tag" id="info-pattern-source"></span>
             </div>
           </div>
+          <section class="rhythm-settings" aria-labelledby="settings-title">
+            <h3 id="settings-title" class="settings-title" data-i18n="settings.title">Your rhythm</h3>
+            <label class="settings-row" for="resonance-bpm">
+              <span class="settings-label" data-i18n="settings.resonance">Resonance pace</span>
+              <span id="resonance-bpm-value" class="settings-value"></span>
+            </label>
+            <input id="resonance-bpm" class="settings-range" type="range" min="4.5" max="7" step="0.5" value="5.5" data-i18n-aria-label="settings.bpmAria" />
+            <p class="settings-hint" data-i18n="settings.resonanceHint"></p>
+            <label class="settings-toggle">
+              <input id="gentle-holds" type="checkbox" />
+              <span>
+                <span class="settings-label" data-i18n="settings.gentle">Shorter breath holds</span>
+                <span class="settings-hint" data-i18n="settings.gentleHint"></span>
+              </span>
+            </label>
+          </section>
           <p class="drawer-disclaimer" data-i18n="drawer.disclaimer"></p>
         </div>
         <div class="drawer-footer">
           <button id="btn-info-restore" class="btn-restore-harmony hidden"></button>
           <button id="btn-language" class="btn-language" data-i18n="drawer.language" data-i18n-aria-label="drawer.languageAria">Français</button>
+          <a href="/privacy.html" class="btn-language" data-i18n="drawer.privacy">Privacy</a>
         </div>
       </div>
     </div>

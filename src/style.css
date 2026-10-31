@@ -1084,6 +1084,74 @@ body.oled-black-active::after {
   justify-content: center;
 }
 
+.rhythm-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+}
+
+.settings-title {
+  margin: 0 0 0.25rem;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.settings-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.25rem 0.75rem;
+  align-items: baseline;
+}
+
+.settings-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.settings-value {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-variant-numeric: tabular-nums;
+}
+
+.settings-range {
+  width: 100%;
+  min-height: 32px;
+  accent-color: #43e97b;
+}
+
+.settings-hint {
+  display: block;
+  margin: 0;
+  font-size: 0.72rem;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.settings-toggle {
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+  margin-top: 0.4rem;
+  cursor: pointer;
+}
+
+.settings-toggle input {
+  width: 20px;
+  height: 20px;
+  margin-top: 0.1rem;
+  flex-shrink: 0;
+  accent-color: #43e97b;
+}
+
 .drawer-disclaimer {
   margin: 0.25rem 0 0;
   font-size: 0.72rem;
@@ -1102,6 +1170,12 @@ body.oled-black-active::after {
   min-height: 40px;
   border-radius: var(--radius-full);
   cursor: pointer;
+}
+
+.btn-language {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
 }
 
 .btn-language:hover {
