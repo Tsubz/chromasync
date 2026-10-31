@@ -4,6 +4,19 @@
 
 ---
 
+## 0. Google Play Store Listing
+
+Ready-to-paste listing texts live in [`fastlane/metadata/android/`](fastlane/metadata/android) (English `en-US`, French `fr-FR`), in the standard fastlane layout: `title.txt` (≤30 chars), `short_description.txt` (≤80), `full_description.txt` (≤4000).
+
+Play Console checklist for a wellness app:
+- **Category:** Health & Fitness. **Contains ads:** No. **In-app purchases:** No.
+- **Privacy policy URL:** https://chromasync-app.web.app/privacy
+- **Data safety form:** no data collected, no data shared (settings stay on the device).
+- **Health apps declaration:** relaxation / meditation; not a medical device. The full description ends with the health disclaimer, keep it.
+- **Content rating:** Everyone.
+
+---
+
 ## 1. Show HN (Hacker News) Launch Package
 
 **Target:** https://news.ycombinator.com/submit  

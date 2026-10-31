@@ -11,12 +11,14 @@
 
 | Pattern | Phases | Rate | Main reference |
 |:---|:---|:---|:---|
-| Resonance Breathing | 5.5 s in / 5.5 s out | 5.5 breaths/min (≈0.09 Hz) | Lehrer & Gevirtz 2014; Lin et al. 2014; Lehrer et al. 2020 |
+| Resonance Breathing | 5.5 s in / 5.5 s out (adjustable 4.5–7 breaths/min) | 5.5 breaths/min (≈0.09 Hz) by default | Lehrer & Gevirtz 2014; Lin et al. 2014; Lehrer et al. 2020 |
 | Physiological Sigh | 3 s in + 1.2 s top-up in / 6 s out | ≈5.9 breaths/min | Balban et al., Cell Reports Medicine 2023 |
 | Box | 4 / 4 / 4 / 4 s | 3.75 breaths/min | Balban et al. 2023; Marchant et al. 2025 |
 | 4-7-8 Relax | 4 s in / 7 s hold / 8 s out | ≈3.2 breaths/min | Vierra et al., Physiol. Rep. 2022 (small trial) |
 | Deep Unwind | 4 s in / 2 s hold / 6 s out | 5 breaths/min | Gerritsen & Band, Front. Hum. Neurosci. 2018 |
 | Free Breath | user-paced (touch and hold) | — | — |
+
+An optional "shorter breath holds" setting halves every hold phase (e.g. 4-7-8 becomes 4-3.5-8).
 
 ### 1.1 Resonance breathing
 The arterial baroreflex responds with a delay of about 5 s, so the loop resonates near 0.1 Hz (period ≈10 s). Breathing near this frequency makes respiratory sinus arrhythmia and baroreflex oscillations reinforce each other, which maximises HRV (Vaschillo et al., 2006). Individual resonance frequencies range from about 4.5 to 7 breaths/min, averaging ≈5.5 in adults; Chromasync uses 5.5. A 2025 comparison found 6 breaths/min raised HRV more than box or 4-7-8 breathing, with no single-session change in blood pressure or mood, and some mild over-breathing (Marchant et al., 2025).
@@ -53,3 +55,5 @@ Vagal outflow to the heart is gated by respiration: partly blocked during inspir
 - Preferences (language, atmosphere, rhythm, duration, mute) are stored in localStorage on the device only.
 - A service worker precaches the app shell at build time; the app works offline after the first visit.
 - The screen wake lock is held only while a session is playing; the session pauses when the app goes to the background.
+- Rendering stops while OLED mode hides the canvas and drops to ~20 fps while paused, to save battery.
+- Privacy policy: https://chromasync-app.web.app/privacy
