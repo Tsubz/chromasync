@@ -1,4 +1,5 @@
-import { tDynamic } from '../i18n';
+import { getLocale, tDynamic } from '../i18n';
+import { BreathSettings } from './BreathSettings';
 
 export type BreathPhaseType = 'inhale' | 'hold_in' | 'exhale' | 'hold_out';
 
@@ -20,17 +21,44 @@ export interface BreathingPattern {
   phases: BreathPhase[];
 }
 
+interface PhaseDefinition {
+  type: BreathPhaseType;
+  /** Seconds, or a function when the duration follows the user's settings */
+  duration: number | (() => number);
+}
+
 interface PatternDefinition {
   id: string;
   scientificSource: string;
   recommendedAtmosphereId: string;
-  phases: { type: BreathPhaseType; duration: number }[];
+  phases: PhaseDefinition[];
+}
+
+/** Hold phases are halved when the user enables gentle holds. */
+function phaseDuration(phase: PhaseDefinition): number {
+  const base = typeof phase.duration === 'function' ? phase.duration() : phase.duration;
+  const isHold = phase.type === 'hold_in' || phase.type === 'hold_out';
+  return isHold && BreathSettings.gentleHolds ? base / 2 : base;
+}
+
+/** Locale-formatted pace values, shared with the settings UI. */
+export function resonanceTextParams(): Record<string, string> {
+  const format = new Intl.NumberFormat(getLocale(), { maximumFractionDigits: 1 });
+  return {
+    secs: format.format(BreathSettings.resonanceHalfCycle),
+    bpm: format.format(BreathSettings.resonanceBpm)
+  };
+}
+
+/** Placeholders available to every pattern text (e.g. the resonance pattern's seconds per phase). */
+function textParams(): Record<string, string> {
+  return resonanceTextParams();
 }
 
 // Display texts live in src/i18n under `pattern.<id>.*` and are resolved on read,
 // so they always follow the active locale.
 function definePattern(def: PatternDefinition): BreathingPattern {
-  const text = (field: string) => tDynamic(`pattern.${def.id}.${field}`);
+  const text = (field: string) => tDynamic(`pattern.${def.id}.${field}`, textParams());
   return {
     id: def.id,
     scientificSource: def.scientificSource,
@@ -40,7 +68,8 @@ function definePattern(def: PatternDefinition): BreathingPattern {
     get tagline() { return text('tagline'); },
     get description() { return text('description'); },
     phases: def.phases.map((phase, i) => ({
-      ...phase,
+      type: phase.type,
+      get duration() { return phaseDuration(phase); },
       get label() { return text(`phase${i}.label`); },
       get subtext() { return text(`phase${i}.subtext`); }
     }))
@@ -64,8 +93,8 @@ export const BREATHING_PATTERNS: BreathingPattern[] = [
     scientificSource: 'Lehrer & Gevirtz, Front. Psychol. 2014 · Lehrer et al., Appl. Psychophysiol. Biofeedback 2020 (meta-analysis)',
     recommendedAtmosphereId: 'aurora',
     phases: [
-      { type: 'inhale', duration: 5.5 },
-      { type: 'exhale', duration: 5.5 }
+      { type: 'inhale', duration: () => BreathSettings.resonanceHalfCycle },
+      { type: 'exhale', duration: () => BreathSettings.resonanceHalfCycle }
     ]
   }),
   definePattern({

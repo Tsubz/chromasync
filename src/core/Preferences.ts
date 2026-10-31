@@ -4,6 +4,8 @@ export interface PreferenceValues {
   patternId: string;
   durationMinutes: number;
   muted: boolean;
+  resonanceBpm: number;
+  gentleHolds: boolean;
 }
 
 const STORAGE_KEY = 'chromasync:prefs:v1';

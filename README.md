@@ -32,6 +32,8 @@ In an era saturated with noisy AI wrappers, 500 MB wellness downloads, intrusive
 - 🚫 **Zero Framework Bloat:** Crafted in pure, high-performance TypeScript with zero heavy UI frameworks (No React, Vue, or Angular bundle overhead).
 - 🚫 **Zero Tracking or Accounts:** No sign-in wall, no analytics, no third-party requests (fonts are self-hosted). Runs 100% client-side, and offline after the first visit (PWA with a precached app shell).
 - 📦 **~41 KB of Code (gzip):** JavaScript, CSS and HTML combined, in two languages. Self-hosted fonts add ~100 KB (woff2, latin subset), cached once.
+- 🫁 **Your rhythm:** resonance pace adjustable from 4.5 to 7 breaths per minute, and an option to shorten breath holds for beginners (info drawer).
+- 🔋 **Battery-aware:** rendering pauses in eyes-closed (OLED) mode and slows down while the session is paused.
 - 🌍 **English & French:** The interface follows the device language and can be switched from the info drawer. Your last atmosphere, rhythm, duration and mute choice are remembered on the device.
 
 ---
@@ -147,4 +149,4 @@ Chromasync is a relaxation tool, not a medical device. It does not diagnose, tre
 
 ## 📄 License & Attribution
 
-Designed and engineered with an obsession for zero-bloat digital craftsmanship. Released under the [MIT License](LICENSE).
+Designed and engineered with an obsession for zero-bloat digital craftsmanship. Released under the [MIT License](LICENSE). [Privacy policy](https://chromasync-app.web.app/privacy): no data collected.

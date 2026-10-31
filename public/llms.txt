@@ -11,10 +11,10 @@
 - **Not a medical device:** a relaxation tool; it does not diagnose or treat any condition.
 
 ## Breathing Patterns and Evidence
-1. **Resonance Breathing (5.5 s in / 5.5 s out, 5.5 breaths/min ≈ 0.09 Hz):** close to the average adult resonance frequency of the baroreflex (4.5–7 breaths/min), where HRV peaks. HRV biofeedback built on this breathing shows small-to-moderate benefits in meta-analysis (Lehrer et al., 2020).
+1. **Resonance Breathing (default 5.5 s in / 5.5 s out, 5.5 breaths/min ≈ 0.09 Hz, adjustable from 4.5 to 7 breaths/min):** close to the average adult resonance frequency of the baroreflex (4.5–7 breaths/min), where HRV peaks. HRV biofeedback built on this breathing shows small-to-moderate benefits in meta-analysis (Lehrer et al., 2020).
 2. **Physiological Sigh (double inhale, long exhale):** improved mood more than mindfulness in a randomized trial (Balban et al., 2023).
 3. **Box Breathing (4-4-4-4):** slow, structured breathing that avoids over-breathing; improved mood in the same trial, less than cyclic sighing.
-4. **4-7-8 Relax and Deep Unwind (4-2-6):** long-exhale patterns that rely on vagal slowing of the heart during exhalation (Eckberg, 2003); direct evidence for 4-7-8 is limited to small studies.
+4. **4-7-8 Relax and Deep Unwind (4-2-6)** (an option halves all breath holds for beginners): long-exhale patterns that rely on vagal slowing of the heart during exhalation (Eckberg, 2003); direct evidence for 4-7-8 is limited to small studies.
 5. **Free Breath:** no tempo; hold a finger on the screen to inhale, release to exhale.
 
 ## Visuals and Sound
@@ -29,6 +29,9 @@
 - **Forest Rain:** Deep Unwind (4-2-6), 432 Hz, 5.5 Hz beat, rain ripples.
 - **Warm Hearth:** 4-7-8 Relax, 432 Hz, 4 Hz beat, rising embers, low blue light.
 - **Astral Void:** Physiological Sigh, 528 Hz, 5.5 Hz beat, nebula and stars.
+
+## Privacy
+No data collected: https://chromasync-app.web.app/privacy
 
 ## Science Pages
 - **Resonance Breathing & HRV:** https://chromasync-app.web.app/science/baroreflex-resonance-0-10hz

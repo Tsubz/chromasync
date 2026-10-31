@@ -26,6 +26,7 @@ export class ShaderRenderer {
   private uTouchActiveLoc: WebGLUniformLocation | null = null;
   private uGrainLoc: WebGLUniformLocation | null = null;
   // Anti-banding film grain; `?nograin` turns it off so tests can measure the pattern itself
+  private lastRenderTime: number = 0;
   private grainAmount: number = new URLSearchParams(window.location.search).has('nograin') ? 0.0 : 0.022;
 
   // Touch tracking state
@@ -229,10 +230,14 @@ export class ShaderRenderer {
 
   public render(state: BreathState, timestamp: number): void {
     const timeInSeconds = timestamp * 0.001;
+    // Animations advance with real time, so they run at the same speed on 60/120 Hz screens
+    // and when frames are skipped to save battery
+    const dt = this.lastRenderTime ? Math.min(0.1, (timestamp - this.lastRenderTime) / 1000) : 1 / 60;
+    this.lastRenderTime = timestamp;
 
-    // Update atmosphere color crossfade
+    // Update atmosphere color crossfade (~0.67 s)
     if (this.transitionProgress < 1.0) {
-      this.transitionProgress = Math.min(1.0, this.transitionProgress + 0.025);
+      this.transitionProgress = Math.min(1.0, this.transitionProgress + dt * 1.5);
       const t = this.transitionProgress;
       this.activeBg = this.lerpColor(this.currentAtmosphere.bgBase, this.targetAtmosphere.bgBase, t);
       this.activeInhale = this.lerpColor(this.currentAtmosphere.inhaleGlow, this.targetAtmosphere.inhaleGlow, t);
@@ -267,7 +272,7 @@ export class ShaderRenderer {
       gl.uniform3f(this.uExhaleCoolLoc, this.activeExhale.r, this.activeExhale.g, this.activeExhale.b);
       gl.uniform3f(this.uAccentLoc, this.activeAccent.r, this.activeAccent.g, this.activeAccent.b);
       // Smooth touch active bloom
-      this.touchActive += (this.targetTouchActive - this.touchActive) * 0.18;
+      this.touchActive += (this.targetTouchActive - this.touchActive) * (1 - Math.pow(0.82, dt * 60));
       gl.uniform2f(this.uTouchPosLoc, this.touchPos.x, this.touchPos.y);
       gl.uniform1f(this.uTouchActiveLoc, this.touchActive);
       gl.uniform1f(this.uGrainLoc, this.grainAmount);

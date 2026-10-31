@@ -21,7 +21,13 @@ export class KeyboardShortcuts {
 
   private init(): void {
     window.addEventListener('keydown', (e: KeyboardEvent) => {
+      // Form controls keep their own keys (Space toggles a checkbox, arrows move a slider);
+      // only Escape still closes the drawer they live in
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        if (e.key === 'Escape') {
+          (e.target as HTMLElement).blur();
+          this.handlers.onEscape?.();
+        }
         return;
       }
 

@@ -154,12 +154,48 @@ try {
   check('Info drawer shows the medical disclaimer', await page.isVisible('.drawer-disclaimer'));
   await page.keyboard.press('Escape');
 
+  // Rhythm settings: the resonance slider renames the pill and survives a reload
+  await page.click('#btn-info');
+  await page.waitForTimeout(300);
+  await page.locator('#resonance-bpm').fill('6');
+  await page.locator('#gentle-holds').check();
+  const pillAfter = await page.evaluate(() => document.querySelector('#pattern-pills .pill-btn:nth-child(2) .name-short')?.textContent);
+  check('Resonance pace slider updates the rhythm name', pillAfter === '5s Cohérence', pillAfter);
+  await page.keyboard.press('Escape');
+
+  // Horizontal swipe on the canvas changes atmosphere
+  const activeIndex = () => page.evaluate(() =>
+    [...document.querySelectorAll('#atmosphere-swatches .atmosphere-btn')].findIndex(b => b.classList.contains('active')));
+  const before = await activeIndex();
+  await page.mouse.move(300, 420);
+  await page.mouse.down();
+  await page.mouse.move(150, 425); // one move: headless input events are ~250 ms apart
+  await page.mouse.up();
+  await page.waitForTimeout(300);
+  check('Swiping left selects the next atmosphere', (await activeIndex()) === (before + 1) % 5);
+  await page.mouse.click(195, 420); // the swipe must not have toggled playback; leave state as is
+
   // Preferences survive a reload
   await page.click('#atmosphere-swatches .atmosphere-btn:nth-child(2)');
   await page.reload({ waitUntil: 'networkidle' });
   const activeAtmosphere = await page.evaluate(() =>
     [...document.querySelectorAll('#atmosphere-swatches .atmosphere-btn')].findIndex(b => b.classList.contains('active')));
   check('Selected atmosphere is restored after reload', activeAtmosphere === 1, `index ${activeAtmosphere}`);
+  const restoredSettings = await page.evaluate(() => [
+    (document.getElementById('resonance-bpm')).value,
+    (document.getElementById('gentle-holds')).checked
+  ]);
+  check('Rhythm settings are restored after reload', restoredSettings[0] === '6' && restoredSettings[1] === true, String(restoredSettings));
+
+  // Going to the background pauses the session
+  await page.mouse.click(195, 420);
+  await page.waitForTimeout(600);
+  await page.evaluate(() => {
+    Object.defineProperty(document, 'hidden', { configurable: true, get: () => true });
+    document.dispatchEvent(new Event('visibilitychange'));
+  });
+  await page.waitForTimeout(200);
+  check('Session pauses when the app goes to the background', (await phaseText(page)).label === 'En pause');
 
   // Offline support via the service worker
   await page.evaluate(() => navigator.serviceWorker.ready);
