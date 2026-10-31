@@ -14,6 +14,7 @@ export class AudioEngine {
   private soundEffects: SoundEffects | null = null;
   private tibetanBowl: TibetanBowlSynthesizer | null = null;
   private atmosphereSounds: AtmosphereSoundManager | null = null;
+  private recordingDestination: MediaStreamAudioDestinationNode | null = null;
   
   private isMuted: boolean = false;
   private isUnlocked: boolean = false;
@@ -57,9 +58,12 @@ export class AudioEngine {
   public getMediaStreamDestination(): MediaStreamAudioDestinationNode | null {
     this.unlock();
     if (!this.ctx || !this.masterGain) return null;
+    // Reuse one recording tap: creating a new one per recording would leave stale nodes connected
+    if (this.recordingDestination) return this.recordingDestination;
     try {
       const dest = this.ctx.createMediaStreamDestination();
       this.masterGain.connect(dest);
+      this.recordingDestination = dest;
       return dest;
     } catch {
       return null;
@@ -129,6 +133,14 @@ export class AudioEngine {
 
   public getBinauralBeat(): number {
     return this.synthChord ? this.synthChord.getBinauralBeat() : 5.5;
+  }
+
+  /** Sets the initial mute state without creating the AudioContext (no user gesture yet). */
+  public setMuted(muted: boolean): void {
+    this.isMuted = muted;
+    if (this.masterGain && this.ctx) {
+      this.masterGain.gain.setTargetAtTime(muted ? 0.0 : this.volume, this.ctx.currentTime, 0.05);
+    }
   }
 
   public toggleMute(): boolean {

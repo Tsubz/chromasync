@@ -1,3 +1,4 @@
+import { t } from '../i18n';
 import { BreathingPattern, BreathPhase, BreathPhaseType, BREATHING_PATTERNS } from './Patterns';
 
 export interface BreathState {
@@ -13,7 +14,8 @@ export interface BreathState {
 }
 
 export type StateListener = (state: BreathState) => void;
-export type PhaseTransitionListener = (fromPhase: BreathPhase | null, toPhase: BreathPhase) => void;
+/** `isCycleComplete` is true only when the engine wrapped from the last phase back to the first. */
+export type PhaseTransitionListener = (fromPhase: BreathPhase | null, toPhase: BreathPhase, isCycleComplete: boolean) => void;
 
 export class BreathingEngine {
   private pattern: BreathingPattern;
@@ -75,7 +77,7 @@ export class BreathingEngine {
       this.isTouchPacing = false;
     }
     
-    this.notifyTransition(prevPhase, this.getCurrentPhase());
+    this.notifyTransition(prevPhase, this.getCurrentPhase(), false);
     this.notifyState();
   }
 
@@ -153,7 +155,7 @@ export class BreathingEngine {
       this.phaseIndex = (this.phaseIndex + 1) % this.pattern.phases.length;
       
       const newPhase = this.getCurrentPhase();
-      this.notifyTransition(prevPhase, newPhase);
+      this.notifyTransition(prevPhase, newPhase, this.phaseIndex === 0);
     }
 
     this.notifyState();
@@ -164,21 +166,14 @@ export class BreathingEngine {
       const isHoldFull = this.touchBreathScale >= 0.96;
       const isHoldEmpty = this.touchBreathScale <= 0.04;
 
-      let label = 'Inspiration Libre';
-      let subtext = 'Maintenez le doigt posé pour inspirer';
-
+      let state: 'inhale' | 'full' | 'exhale' | 'empty' = 'inhale';
       if (!this.isTouchInhaling) {
-        if (isHoldEmpty) {
-          label = 'Silence & Présence';
-          subtext = 'Poumons vides · Posez votre doigt pour inspirer à votre gré';
-        } else {
-          label = 'Expiration Libre';
-          subtext = 'L\'air se dissipe doucement dans le calme';
-        }
+        state = isHoldEmpty ? 'empty' : 'exhale';
       } else if (isHoldFull) {
-        label = 'Pleins Poumons';
-        subtext = 'Habitez la plénitude · Relâchez quand vous êtes prêt';
+        state = 'full';
       }
+      const label = t(`free.${state}.label`);
+      const subtext = t(`free.${state}.subtext`);
 
       const touchPhase: BreathPhase = {
         type: this.isTouchInhaling ? 'inhale' : 'exhale',
@@ -282,7 +277,7 @@ export class BreathingEngine {
     this.stateListeners.forEach(listener => listener(state));
   }
 
-  private notifyTransition(fromPhase: BreathPhase | null, toPhase: BreathPhase): void {
-    this.transitionListeners.forEach(listener => listener(fromPhase, toPhase));
+  private notifyTransition(fromPhase: BreathPhase | null, toPhase: BreathPhase, isCycleComplete: boolean): void {
+    this.transitionListeners.forEach(listener => listener(fromPhase, toPhase, isCycleComplete));
   }
 }

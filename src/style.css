@@ -810,6 +810,34 @@ body.sleep-dimmer-active .phase-indicator-ring {
   }
 }
 
+/* Narrow phones (<= 440px): the header must fit brand + badge + 5 icon buttons */
+@media (max-width: 440px) {
+  .hud-top {
+    gap: 0.4rem;
+  }
+
+  .brand {
+    padding: 0.45rem 0.6rem;
+    flex-shrink: 0;
+  }
+
+  .brand-title {
+    display: none;
+  }
+
+  .top-actions {
+    gap: 0.3rem;
+    min-width: 0;
+  }
+
+  .icon-btn {
+    min-width: 38px;
+    min-height: 38px;
+    width: 38px;
+    height: 38px;
+  }
+}
+
 /* Compact Screens (<= 380px) */
 @media (max-width: 380px) {
   .hud-bottom {
@@ -1051,7 +1079,33 @@ body.oled-black-active::after {
 .drawer-footer {
   margin-top: 1.25rem;
   display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
   justify-content: center;
+}
+
+.drawer-disclaimer {
+  margin: 0.25rem 0 0;
+  font-size: 0.72rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.btn-language {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.55rem 1rem;
+  min-height: 40px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+}
+
+.btn-language:hover {
+  background: var(--glass-bg-hover);
 }
 
 /* One-Tap Re-Harmonization Action Button */

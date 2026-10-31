@@ -1,4 +1,5 @@
 import { TuningFrequency } from '../audio/SynthChord';
+import { tDynamic } from '../i18n';
 
 export interface RGBColor {
   r: number; // 0..1
@@ -31,13 +32,25 @@ export interface Atmosphere {
   scientificTarget: string;
 }
 
+type AtmosphereText = 'name' | 'shortName' | 'tagline' | 'description' | 'binauralLabel' | 'scientificTarget';
+
+// Display texts live in src/i18n under `atm.<id>.*` and are resolved on read.
+function defineAtmosphere(def: Omit<Atmosphere, AtmosphereText>): Atmosphere {
+  const text = (field: string) => tDynamic(`atm.${def.id}.${field}`);
+  return {
+    ...def,
+    get name() { return text('name'); },
+    get shortName() { return text('shortName'); },
+    get tagline() { return text('tagline'); },
+    get description() { return text('description'); },
+    get binauralLabel() { return text('beat'); },
+    get scientificTarget() { return text('target'); }
+  };
+}
+
 export const ATMOSPHERES: Atmosphere[] = [
-  {
+  defineAtmosphere({
     id: 'aurora',
-    name: 'Celestial Aurora',
-    shortName: 'Aurora',
-    tagline: 'Fluid watercolor bleeds & light bloom',
-    description: 'Diffusion aquarelle fractale (D≈1.4) et drone en 9e majeure favorisant l\'élévation du tonus vagal et la sérotonine.',
     scientificSource: 'Fractal Fluency (Taylor et al., NASA/Univ. of Oregon) & 432Hz Trial (Calamassi, 2019)',
     icon: '🌌',
     shaderMode: 0,
@@ -49,16 +62,10 @@ export const ATMOSPHERES: Atmosphere[] = [
     accent: { r: 0.98, g: 0.42, b: 0.52 },
     recommendedTuning: 432,
     recommendedBinauralBeat: 5.5,
-    binauralLabel: 'Theta 5.5Hz',
-    recommendedPatternId: 'coherence_55',
-    scientificTarget: 'Autonomic balance & vagal tone'
-  },
-  {
+    recommendedPatternId: 'coherence_55'
+  }),
+  defineAtmosphere({
     id: 'ocean',
-    name: 'Oceanic Tide',
-    shortName: 'Ocean',
-    tagline: 'Liquid caustics & tidal surges',
-    description: 'Caustiques liquides cyan (470-510nm) et houle marine modulée par le souffle, stimulant la concentration et les ondes Alpha.',
     scientificSource: 'Biophilic Water Auditory Recovery (Buxton et al., PNAS 2021) & 528Hz Endocrine Trial (Akimoto, 2018)',
     icon: '🌊',
     shaderMode: 1,
@@ -70,19 +77,13 @@ export const ATMOSPHERES: Atmosphere[] = [
     accent: { r: 0.32, g: 0.42, b: 0.92 },
     recommendedTuning: 528,
     recommendedBinauralBeat: 10.0,
-    binauralLabel: 'Alpha 10Hz Focus',
-    recommendedPatternId: 'box_4444',
-    scientificTarget: 'Cognitive focus & mental clarity'
-  },
-  {
+    recommendedPatternId: 'box_4444'
+  }),
+  defineAtmosphere({
     id: 'rain',
-    name: 'Forest Rain',
-    shortName: 'Rain',
-    tagline: 'Dappled canopy & water ripples',
     icon: '🌧️',
     shaderMode: 2,
     swatchGradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-    description: 'Ondes de pluie et teintes émeraude (520-550nm) réduisant la surcharge cognitive via la restauration attentionnelle.',
     scientificSource: 'Attention Restoration Theory (Kaplan) & Acoustic Noise Spectrum (Zhou et al., 2012)',
     bgBase: { r: 0.03, g: 0.07, b: 0.06 },
     inhaleGlow: { r: 0.42, g: 0.90, b: 0.65 },
@@ -91,16 +92,10 @@ export const ATMOSPHERES: Atmosphere[] = [
     accent: { r: 0.22, g: 0.72, b: 0.65 },
     recommendedTuning: 432,
     recommendedBinauralBeat: 5.5,
-    binauralLabel: 'Theta 5.5Hz',
-    recommendedPatternId: 'sleep_426',
-    scientificTarget: 'Biophilic mental fatigue relief'
-  },
-  {
+    recommendedPatternId: 'sleep_426'
+  }),
+  defineAtmosphere({
     id: 'hearth',
-    name: 'Warm Hearth',
-    shortName: 'Hearth',
-    tagline: 'Charcoal void & dancing embers',
-    description: 'Lueur ambrée chaude (620-700nm sans spectre bleu) et crépitements apaisants préservant la sécrétion naturelle de mélatonine.',
     scientificSource: 'Circadian Photobiology (Lockley et al.) & Parasympathetic Vagus Release (Weil, 2010)',
     icon: '🕯️',
     shaderMode: 3,
@@ -112,16 +107,10 @@ export const ATMOSPHERES: Atmosphere[] = [
     accent: { r: 0.92, g: 0.48, b: 0.22 },
     recommendedTuning: 432,
     recommendedBinauralBeat: 4.0,
-    binauralLabel: 'Theta 4Hz Sleep',
-    recommendedPatternId: 'relax_478',
-    scientificTarget: 'Pre-sleep parasympathetic calm'
-  },
-  {
+    recommendedPatternId: 'relax_478'
+  }),
+  defineAtmosphere({
     id: 'astral',
-    name: 'Astral Void',
-    shortName: 'Astral',
-    tagline: 'Cosmic nebula & twinkling stardust',
-    description: 'Nébuleuse stellaire et harpe de verre cristalline favorisant la méditation profonde et la conscience contemplative.',
     scientificSource: 'High-Q Resonance & Neuroaesthetics of Spatial Curvature (Bar & Neta, 2006)',
     icon: '✨',
     shaderMode: 4,
@@ -133,8 +122,6 @@ export const ATMOSPHERES: Atmosphere[] = [
     accent: { r: 0.62, g: 0.75, b: 0.96 },
     recommendedTuning: 528,
     recommendedBinauralBeat: 5.5,
-    binauralLabel: 'Theta 5.5Hz',
-    recommendedPatternId: 'sigh_huberman',
-    scientificTarget: 'Deep meditative transcendence'
-  }
+    recommendedPatternId: 'sigh_huberman'
+  })
 ];
