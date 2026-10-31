@@ -60,8 +60,10 @@ export class SynthChord {
       gain.gain.setValueAtTime(voiceGain, this.ctx.currentTime);
 
       if (pannerLeft && pannerRight) {
-        pannerLeft.pan.setValueAtTime(-0.65, this.ctx.currentTime);
-        pannerRight.pan.setValueAtTime(0.65, this.ctx.currentTime);
+        // Binaural beats only exist if each ear hears exactly one of the two tones:
+        // any partial pan leaks the other tone and turns them into ordinary (monaural) beats.
+        pannerLeft.pan.setValueAtTime(-1, this.ctx.currentTime);
+        pannerRight.pan.setValueAtTime(1, this.ctx.currentTime);
 
         oscLeft.connect(pannerLeft);
         pannerLeft.connect(gain);
@@ -129,21 +131,15 @@ export class SynthChord {
     const targetCutoff = 180 + 1300 * Math.pow(breathScale, 1.4) + vasomotorPulse;
     this.filter.frequency.setTargetAtTime(targetCutoff, now, 0.1);
 
-    // 3D Spatial Audio: Expand stereophonic width on inhale, gather inward on exhale
-    const panSpread = 0.50 + 0.42 * breathScale;
-    // Brownian Analog Pitch Drift: Golden-ratio phase offsets preventing digital rigidity
+    // Slow analog-style pitch drift (golden-ratio phase offsets per voice). It is applied
+    // to both ears identically so the left/right difference stays exactly the binaural beat.
     const driftPhase = now * 0.07;
 
     this.voices.forEach((voice, idx) => {
-      if (voice.pannerLeft && voice.pannerRight) {
-        voice.pannerLeft.pan.setTargetAtTime(-panSpread, now, 0.2);
-        voice.pannerRight.pan.setTargetAtTime(panSpread, now, 0.2);
-      }
-
       const baseFreq = this.currentTuning * this.intervalRatios[idx];
       const drift = 0.12 * Math.sin(driftPhase + idx * 1.618);
       voice.oscLeft.frequency.setTargetAtTime(baseFreq - this.currentBinauralBeat / 2 + drift, now, 0.2);
-      voice.oscRight.frequency.setTargetAtTime(baseFreq + this.currentBinauralBeat / 2 - drift, now, 0.2);
+      voice.oscRight.frequency.setTargetAtTime(baseFreq + this.currentBinauralBeat / 2 + drift, now, 0.2);
     });
   }
 
