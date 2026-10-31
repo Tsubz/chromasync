@@ -17,6 +17,7 @@ import { applyStaticTranslations, getLocale, setLocale, t } from './i18n';
 import { Preferences } from './core/Preferences';
 import { SessionDurationMinutes } from './core/SessionTimer';
 import { parseDeepLink } from './core/DeepLink';
+import { BreathSettings } from './core/BreathSettings';
 
 class ChromasyncApp {
   private engine: BreathingEngine;
@@ -126,7 +127,8 @@ class ChromasyncApp {
       onNextTuning: () => this.ui.toggleTuningDrawer(),
       onToggleOled: () => this.ui.toggleOledMode(),
       onToggleInfo: () => this.ui.toggleInfoDrawer(),
-      onRecordReel: () => this.studioRecorder.startRecording(11),
+      // One full resonance breath at the user's pace
+      onRecordReel: () => this.studioRecorder.startRecording(Math.round(BreathSettings.resonanceHalfCycle * 2)),
       onEscape: () => {
         this.ui.closeInfoDrawer();
         this.ui.closeTuningDrawer();
@@ -323,6 +325,7 @@ class ChromasyncApp {
   }
 
   private startLoop(): void {
+    let lastRender = 0;
     const loop = (timestamp: number) => {
       // 1. Update clocks & timer
       this.engine.update(timestamp);
@@ -335,8 +338,13 @@ class ChromasyncApp {
       }
       const timerState = this.timer.getState();
 
-      // 2. Render visual field
-      this.renderer.render(state, timestamp);
+      // 2. Render visual field. To save battery: nothing while OLED mode hides the canvas,
+      // and ~20 fps while paused (the field only drifts slowly then)
+      const frameGap = state.isPlaying ? 0 : 50;
+      if (!this.ui.isCanvasHidden() && timestamp - lastRender >= frameGap) {
+        this.renderer.render(state, timestamp);
+        lastRender = timestamp;
+      }
 
       // 3. Modulate procedural audio
       this.audio.update(state.breathScale, state.isPlaying);

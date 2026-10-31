@@ -1,3 +1,4 @@
+import { t } from '../i18n';
 import { AudioEngine } from '../audio/AudioEngine';
 
 export class StudioRecorder {
@@ -46,10 +47,12 @@ export class StudioRecorder {
 
   private showToast(text: string, isDotPulsing = true): void {
     if (!this.toastElement) return;
-    this.toastElement.innerHTML = `
-      ${isDotPulsing ? '<span style="width: 8px; height: 8px; background: #ef4444; border-radius: 50%; box-shadow: 0 0 10px #ef4444; display: inline-block;"></span>' : '✨'}
-      <span>${text}</span>
-    `;
+    this.toastElement.innerHTML = isDotPulsing
+      ? '<span style="width: 8px; height: 8px; background: #ef4444; border-radius: 50%; box-shadow: 0 0 10px #ef4444; display: inline-block;"></span>'
+      : '✨';
+    const label = document.createElement('span');
+    label.textContent = text;
+    this.toastElement.appendChild(label);
     this.toastElement.classList.remove('hidden');
     this.toastElement.style.opacity = '1';
   }
@@ -171,7 +174,7 @@ export class StudioRecorder {
 
       ctx.fillStyle = '#38bdf8';
       ctx.font = '500 18px "Plus Jakarta Sans", monospace';
-      ctx.fillText('~0.1 Hz RESONANCE BREATHING • 432 Hz', cx, 185);
+      ctx.fillText(t('studio.tagline').toUpperCase(), cx, 185);
 
       requestAnimationFrame(drawFrame);
     };
@@ -204,7 +207,7 @@ export class StudioRecorder {
     this.recorder.onstop = () => {
       isDrawing = false;
       const blob = new Blob(this.recordedChunks, { type: mimeType });
-      this.showToast('✓ Video Reel Export Complete!', false);
+      this.showToast(t('studio.done'), false);
       setTimeout(() => this.hideToast(), 3000);
 
       // Download file
@@ -220,7 +223,7 @@ export class StudioRecorder {
     };
 
     this.recorder.start();
-    this.showToast(`🔴 Recording Reel (11s Coherence)...`);
+    this.showToast(t('studio.recording', { secs: durationSeconds }));
 
     setTimeout(() => {
       if (this.recorder && this.recorder.state !== 'inactive') {
