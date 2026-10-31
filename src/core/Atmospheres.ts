@@ -51,7 +51,7 @@ function defineAtmosphere(def: Omit<Atmosphere, AtmosphereText>): Atmosphere {
 export const ATMOSPHERES: Atmosphere[] = [
   defineAtmosphere({
     id: 'aurora',
-    scientificSource: 'Fractal Fluency (Taylor et al., NASA/Univ. of Oregon) & 432Hz Trial (Calamassi, 2019)',
+    scientificSource: 'Fractal fluency (Taylor et al., Front. Hum. Neurosci. 2011) · 432 Hz pilot (Calamassi & Pomponi, Explore 2019)',
     icon: '🌌',
     shaderMode: 0,
     swatchGradient: 'linear-gradient(135deg, #ff9a8b 0%, #ff6a88 50%, #ff99ac 100%)',
@@ -66,7 +66,7 @@ export const ATMOSPHERES: Atmosphere[] = [
   }),
   defineAtmosphere({
     id: 'ocean',
-    scientificSource: 'Biophilic Water Auditory Recovery (Buxton et al., PNAS 2021) & 528Hz Endocrine Trial (Akimoto, 2018)',
+    scientificSource: 'Natural sounds review (Buxton et al., PNAS 2021) · 528 Hz pilot, n=9 (Akimoto et al., Health 2018)',
     icon: '🌊',
     shaderMode: 1,
     swatchGradient: 'linear-gradient(135deg, #00f2fe 0%, #4facfe 100%)',
@@ -84,7 +84,7 @@ export const ATMOSPHERES: Atmosphere[] = [
     icon: '🌧️',
     shaderMode: 2,
     swatchGradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-    scientificSource: 'Attention Restoration Theory (Kaplan) & Acoustic Noise Spectrum (Zhou et al., 2012)',
+    scientificSource: 'Attention restoration (Kaplan, J. Environ. Psychol. 1995) · pink noise & sleep (Zhou et al., J. Theor. Biol. 2012)',
     bgBase: { r: 0.03, g: 0.07, b: 0.06 },
     inhaleGlow: { r: 0.42, g: 0.90, b: 0.65 },
     holdLuster: { r: 0.86, g: 0.98, b: 0.72 },
@@ -96,14 +96,15 @@ export const ATMOSPHERES: Atmosphere[] = [
   }),
   defineAtmosphere({
     id: 'hearth',
-    scientificSource: 'Circadian Photobiology (Lockley et al.) & Parasympathetic Vagus Release (Weil, 2010)',
+    scientificSource: 'Blue light & melatonin (Lockley, Brainard & Czeisler, J. Clin. Endocrinol. Metab. 2003)',
     icon: '🕯️',
     shaderMode: 3,
     swatchGradient: 'linear-gradient(135deg, #f6d365 0%, #fda085 100%)',
-    bgBase: { r: 0.09, g: 0.05, b: 0.03 },
-    inhaleGlow: { r: 0.98, g: 0.72, b: 0.25 },
-    holdLuster: { r: 1.0, g: 0.90, b: 0.62 },
-    exhaleCool: { r: 0.58, g: 0.28, b: 0.18 },
+    bgBase: { r: 0.09, g: 0.05, b: 0.015 },
+    inhaleGlow: { r: 0.98, g: 0.66, b: 0.14 },
+    // Evening atmosphere: the palette keeps blue output near 1% of a white screen
+    holdLuster: { r: 1.0, g: 0.84, b: 0.38 },
+    exhaleCool: { r: 0.58, g: 0.26, b: 0.10 },
     accent: { r: 0.92, g: 0.48, b: 0.22 },
     recommendedTuning: 432,
     recommendedBinauralBeat: 4.0,
@@ -111,7 +112,7 @@ export const ATMOSPHERES: Atmosphere[] = [
   }),
   defineAtmosphere({
     id: 'astral',
-    scientificSource: 'High-Q Resonance & Neuroaesthetics of Spatial Curvature (Bar & Neta, 2006)',
+    scientificSource: 'Preference for curved shapes (Bar & Neta, Psychol. Sci. 2006)',
     icon: '✨',
     shaderMode: 4,
     swatchGradient: 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)',

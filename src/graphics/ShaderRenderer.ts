@@ -24,6 +24,9 @@ export class ShaderRenderer {
   private uAccentLoc: WebGLUniformLocation | null = null;
   private uTouchPosLoc: WebGLUniformLocation | null = null;
   private uTouchActiveLoc: WebGLUniformLocation | null = null;
+  private uGrainLoc: WebGLUniformLocation | null = null;
+  // Anti-banding film grain; `?nograin` turns it off so tests can measure the pattern itself
+  private grainAmount: number = new URLSearchParams(window.location.search).has('nograin') ? 0.0 : 0.022;
 
   // Touch tracking state
   private touchPos: { x: number; y: number } = { x: 0, y: 0 };
@@ -161,6 +164,7 @@ export class ShaderRenderer {
     this.uAccentLoc = gl.getUniformLocation(program, 'u_accent');
     this.uTouchPosLoc = gl.getUniformLocation(program, 'u_touchPos');
     this.uTouchActiveLoc = gl.getUniformLocation(program, 'u_touchActive');
+    this.uGrainLoc = gl.getUniformLocation(program, 'u_grain');
   }
 
   private compileShader(type: number, source: string): WebGLShader {
@@ -266,6 +270,7 @@ export class ShaderRenderer {
       this.touchActive += (this.targetTouchActive - this.touchActive) * 0.18;
       gl.uniform2f(this.uTouchPosLoc, this.touchPos.x, this.touchPos.y);
       gl.uniform1f(this.uTouchActiveLoc, this.touchActive);
+      gl.uniform1f(this.uGrainLoc, this.grainAmount);
 
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     } else if (this.fallback) {

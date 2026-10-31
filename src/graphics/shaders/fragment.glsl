@@ -16,6 +16,7 @@ uniform int u_phaseType;       // 0: inhale, 1: hold_in, 2: exhale, 3: hold_out
 uniform int u_atmosphereMode;  // 0: Aurora, 1: Ocean, 2: Rain, 3: Hearth, 4: Astral
 uniform vec2 u_touchPos;       // Normalized aspect-corrected touch coordinate
 uniform float u_touchActive;   // 0.0 to 1.0 smooth contact bloom
+uniform float u_grain;         // film grain amplitude (0 when measuring the fractal dimension)
 
 // Palette colors (RGB normalized 0..1)
 uniform vec3 u_bgBase;
@@ -56,6 +57,10 @@ float snoise(vec2 v) {
 }
 
 // Fractional Brownian Motion (fBm)
+// Octave gain and the domain-warp strengths below are calibrated together so the rendered
+// iso-luminance contours measure D ≈ 1.4 by box-counting (Taylor's "fractal fluency" range
+// is 1.3–1.5). The previous values (gain 0.5, warp 4.0/3.5) measured D ≈ 1.7.
+// Checked by scripts/e2e-smoke.mjs; re-run it after changing any of these numbers.
 float fbm(vec2 st) {
   float value = 0.0;
   float amplitude = 0.5;
@@ -64,7 +69,7 @@ float fbm(vec2 st) {
     value += amplitude * snoise(st * frequency);
     st += vec2(1.7, 3.2);
     frequency *= 2.05;
-    amplitude *= 0.5;
+    amplitude *= 0.44;
   }
   return value;
 }
@@ -77,10 +82,10 @@ float warpedFbm(vec2 p, out vec2 q, out vec2 r) {
     fbm(p + vec2(5.2, 1.3) + t * 0.5)
   );
   r = vec2(
-    fbm(p + 4.0 * q + vec2(1.7, 9.2) + t * 0.35),
-    fbm(p + 4.0 * q + vec2(8.3, 2.8) + t * 0.3)
+    fbm(p + 1.4 * q + vec2(1.7, 9.2) + t * 0.35),
+    fbm(p + 1.4 * q + vec2(8.3, 2.8) + t * 0.3)
   );
-  return fbm(p + 3.5 * r);
+  return fbm(p + 1.2 * r);
 }
 
 // Water Caustic Synthesis (Mode 1: Ocean)
@@ -216,7 +221,7 @@ void main() {
   // Film grain to prevent banding (safe bounded coordinates for mobile GPUs)
   vec2 grainCoord = mod(gl_FragCoord.xy, 128.0);
   float grain = fract(sin(dot(grainCoord, vec2(12.9898, 78.233)) + mod(u_time, 10.0)) * 437.5854);
-  col += (grain - 0.5) * 0.022;
+  col += (grain - 0.5) * u_grain;
 
   col = clamp(col, 0.0, 1.0);
   gl_FragColor = vec4(col, 1.0);
