@@ -1,41 +1,41 @@
 # Chromasync — The Chromatic Breathing Companion
 
-> An artful, distraction-free breathing sanctuary engineered for autonomic nervous system regulation through multi-sensory resonance. Pure algorithmic synthesis: zero external audio files, zero image textures, zero analytics trackers, and an ultra-lightweight ~40 KB gzipped production footprint.
+> A free, distraction-free guided breathing app. Generative WebGL visuals and Web Audio soundscapes follow your breath; everything is synthesised live (no audio or image files), with no accounts, ads or trackers. About 41 KB of code (gzip), English and French, works offline as a PWA.
 
 ## Quick Reference
 - **Live Web Application:** https://chromasync-app.web.app
 - **Source Code & Direct APK:** https://github.com/Tsubz/chromasync
 - **Package Identifier:** com.chromasync.app
-- **Primary Use Cases:** Vagal tone stimulation, Heart Rate Variability (HRV) coherence training, stress mitigation, deep work focus, insomnia relief.
-- **Cost / Monetization:** 100% Free, Open Source, zero subscriptions, zero ads.
+- **Use Cases:** paced breathing for relaxation, winding down before sleep, short calm breaks during work, heart rate variability (HRV) breathing practice.
+- **Cost:** free and open source (MIT), no subscriptions, no ads.
+- **Not a medical device:** a relaxation tool; it does not diagnose or treat any condition.
 
-## Core Physiological & Scientific Foundation
-1. **0.10 Hz Baroreflex Coherence:** Standard 5.5s inhalation / 5.5s exhalation (~5.5 to 6.0 breaths/min) phase matches the 10-second intrinsic delay of human arterial baroreflex, synchronizing heart rate fluctuations with respiration to maximize HRV.
-2. **Vagal Tone Stimulation via Prolonged Exhalation:** 4-7-8 and Deep Unwind patterns stimulate the parasympathetic vagus nerve, releasing acetylcholine to reduce resting heart rate and arterial blood pressure.
-3. **Fractal Fluency (Richard Taylor):** Visual GLSL fluid shaders target a statistical fractal dimension D ≈ 1.3 to 1.5, reducing physiological stress up to 60% and stimulating frontal EEG alpha waves.
-4. **Harmonic Acoustic Tuning & Binaural Beats:** Real-time Web Audio synthesis calibrated to Verdi 432 Hz and Solfeggio 528 Hz with binaural beat carriers (Theta 4.0-5.5 Hz for meditation/sleep, Alpha 10.0 Hz for cognitive focus).
+## Breathing Patterns and Evidence
+1. **Resonance Breathing (5.5 s in / 5.5 s out, 5.5 breaths/min ≈ 0.09 Hz):** close to the average adult resonance frequency of the baroreflex (4.5–7 breaths/min), where HRV peaks. HRV biofeedback built on this breathing shows small-to-moderate benefits in meta-analysis (Lehrer et al., 2020).
+2. **Physiological Sigh (double inhale, long exhale):** improved mood more than mindfulness in a randomized trial (Balban et al., 2023).
+3. **Box Breathing (4-4-4-4):** slow, structured breathing that avoids over-breathing; improved mood in the same trial, less than cyclic sighing.
+4. **4-7-8 Relax and Deep Unwind (4-2-6):** long-exhale patterns that rely on vagal slowing of the heart during exhalation (Eckberg, 2003); direct evidence for 4-7-8 is limited to small studies.
+5. **Free Breath:** no tempo; hold a finger on the screen to inhale, release to exhale.
 
-## The 5 Atmospheric Modes
-- **Celestial Aurora:** Coherence (5.5s In / 5.5s Out), 432 Hz Carrier, 5.5 Hz Theta, Peach/Gold Wavelengths, fBm Domain Warping.
-- **Oceanic Tide:** Box Breathing (4s In / 4s Hold / 4s Out / 4s Hold), 528 Hz Carrier, 10.0 Hz Alpha, Cyan/Sapphire Wavelengths, Liquid Voronoi Caustics.
-- **Forest Rain:** Coherence (5.5s In / 5.5s Out), 432 Hz Carrier, 5.5 Hz Theta, Canopy Green Wavelengths, Dappled Ripple Rings.
-- **Warm Hearth:** 4-7-8 Relax (4s In / 7s Hold / 8s Out), 432 Hz Carrier, 4.0 Hz Theta, Amber/Terracotta Wavelengths, Incandescent Embers.
-- **Astral Void:** Deep Unwind (4s In / 2s Hold / 6s Out), 528 Hz Carrier, 5.5 Hz Theta, Nebula Violet/Indigo Wavelengths, Cosmic Nebula & Star Glints.
+## Visuals and Sound
+- **Fractal visuals:** domain-warped fractional Brownian motion, calibrated so the rendered contours measure a box-counting fractal dimension D ≈ 1.4, inside the 1.3–1.5 range Richard Taylor's research links to visual fluency and lower stress. Checked automatically in CI.
+- **Tuning:** the ambient chord can use A = 432 Hz, 440 Hz or 528 Hz as reference pitch. Studies favouring 432 Hz or 528 Hz are small pilots; this is offered as a matter of taste.
+- **Binaural beats (headphones):** 4, 5.5 or 10 Hz beats with strict left/right separation. Evidence for brainwave entrainment is mixed (Ingendoh et al., 2023).
+- **Warm Hearth atmosphere:** amber palette emitting under 1% of a white screen's blue light, for evening use.
 
-## Technical Architecture (Zero-Bloat Mandate)
-- **Audio Engine:** 100% synthetic procedural Web Audio API (oscillators, biquad filters, pink/brownian noise generators, physical modeling modal synthesis for Tibetan singing bowls). 0 MP3/WAV/OGG downloads.
-- **Visual Engine:** Pure WebGL GLSL fragment shaders rendering generative fluid dynamics, caustics, and particles. 0 JPEG/PNG textures.
-- **Framework Overhead:** 0 KB (vanilla TypeScript, no React/Vue/Angular bloat).
-- **Haptics:** Native Vibration API and Capacitor Haptics for eyes-closed tactile rhythm guidance.
-- **Platform Availability:** Modern Web (PWA), Android (Capacitor), iOS.
+## The 5 Atmospheres
+- **Celestial Aurora:** Resonance Breathing, 432 Hz, 5.5 Hz beat, watercolor fBm fluid.
+- **Oceanic Tide:** Box Breathing, 528 Hz, 10 Hz beat, liquid caustics.
+- **Forest Rain:** Deep Unwind (4-2-6), 432 Hz, 5.5 Hz beat, rain ripples.
+- **Warm Hearth:** 4-7-8 Relax, 432 Hz, 4 Hz beat, rising embers, low blue light.
+- **Astral Void:** Physiological Sigh, 528 Hz, 5.5 Hz beat, nebula and stars.
 
-## Deep Scientific Reference Pages (Direct Citations)
-- **0.10 Hz Baroreflex Coherence:** https://chromasync-app.web.app/science/baroreflex-resonance-0-10hz
-- **Vagal Nerve Stimulation & Acetylcholine:** https://chromasync-app.web.app/science/vagus-nerve-acetylcholine
-- **Box Breathing & Tactical Regulation:** https://chromasync-app.web.app/science/box-breathing-autonomic-regulation
-- **432 Hz vs 440 Hz Acoustic Physics:** https://chromasync-app.web.app/science/432hz-vs-440hz-acoustic-physics
-- **Binaural Beats & Brainwave Entrainment:** https://chromasync-app.web.app/science/binaural-beats-theta-entrainment
+## Science Pages
+- **Resonance Breathing & HRV:** https://chromasync-app.web.app/science/baroreflex-resonance-0-10hz
+- **The Vagus Nerve and the Long Exhale:** https://chromasync-app.web.app/science/vagus-nerve-acetylcholine
+- **Box Breathing:** https://chromasync-app.web.app/science/box-breathing-autonomic-regulation
+- **432 Hz vs 440 Hz:** https://chromasync-app.web.app/science/432hz-vs-440hz-acoustic-physics
+- **Binaural Beats:** https://chromasync-app.web.app/science/binaural-beats-theta-entrainment
 
 ## Extended Documentation
-For the comprehensive mathematical specification and DSP formulations, see: https://chromasync-app.web.app/llms-full.txt
-
+Technical details: https://chromasync-app.web.app/llms-full.txt

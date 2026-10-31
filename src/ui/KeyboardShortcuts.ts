@@ -25,54 +25,43 @@ export class KeyboardShortcuts {
         return;
       }
 
-      switch (e.code) {
-        case 'Space':
-          e.preventDefault();
-          this.handlers.onTogglePlay();
-          break;
-        case 'KeyM':
-          e.preventDefault();
-          this.handlers.onToggleMute();
-          break;
-        case 'KeyF':
-          e.preventDefault();
-          this.handlers.onToggleFullscreen();
-          break;
-        case 'Digit1':
-        case 'Digit2':
-        case 'Digit3':
-        case 'Digit4':
-        case 'Digit5':
-        case 'Digit6':
-          e.preventDefault();
-          const idx = parseInt(e.key, 10) - 1;
-          this.handlers.onSelectPattern(idx);
-          break;
-        case 'KeyA':
-        case 'KeyP':
-          e.preventDefault();
-          this.handlers.onNextAtmosphere();
-          break;
-        case 'KeyT':
-          e.preventDefault();
-          this.handlers.onNextTuning();
-          break;
-        case 'KeyO':
-          e.preventDefault();
-          this.handlers.onToggleOled?.();
-          break;
-        case 'KeyI':
-          e.preventDefault();
-          this.handlers.onToggleInfo?.();
-          break;
-        case 'KeyR':
-          e.preventDefault();
-          this.handlers.onRecordReel?.();
-          break;
-        case 'Escape':
-          e.preventDefault();
-          this.handlers.onEscape?.();
-          break;
+      // Leave browser shortcuts (Ctrl+R, Cmd+F, …) alone
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+      // Digits use the physical key (AZERTY needs Shift to type them); letters use the
+      // typed character so "M" mutes on AZERTY and QWERTY alike
+      const digit = /^(Digit|Numpad)([1-6])$/.exec(e.code);
+      if (digit) {
+        e.preventDefault();
+        this.handlers.onSelectPattern(parseInt(digit[2], 10) - 1);
+        return;
+      }
+
+      if (e.code === 'Space') {
+        e.preventDefault();
+        this.handlers.onTogglePlay();
+        return;
+      }
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        this.handlers.onEscape?.();
+        return;
+      }
+
+      const actions: Record<string, (() => void) | undefined> = {
+        m: this.handlers.onToggleMute,
+        f: this.handlers.onToggleFullscreen,
+        a: this.handlers.onNextAtmosphere,
+        p: this.handlers.onNextAtmosphere,
+        t: this.handlers.onNextTuning,
+        o: this.handlers.onToggleOled,
+        i: this.handlers.onToggleInfo,
+        r: this.handlers.onRecordReel
+      };
+      const action = actions[e.key.toLowerCase()];
+      if (action) {
+        e.preventDefault();
+        action();
       }
     });
   }

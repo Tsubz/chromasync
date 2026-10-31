@@ -16,6 +16,7 @@ import { App } from '@capacitor/app';
 import { applyStaticTranslations, getLocale, setLocale, t } from './i18n';
 import { Preferences } from './core/Preferences';
 import { SessionDurationMinutes } from './core/SessionTimer';
+import { parseDeepLink } from './core/DeepLink';
 
 class ChromasyncApp {
   private engine: BreathingEngine;
@@ -36,9 +37,11 @@ class ChromasyncApp {
 
     applyStaticTranslations();
 
-    // Restore the last session's settings, falling back to the first atmosphere and its paired rhythm
-    const defaultAtmosphere = ATMOSPHERES.find(a => a.id === Preferences.get('atmosphereId')) ?? ATMOSPHERES[0];
-    const defaultPattern = BREATHING_PATTERNS.find(p => p.id === Preferences.get('patternId'))
+    // A link (e.g. from the science pages) wins over the last session's saved settings
+    const link = parseDeepLink(window.location.search, BREATHING_PATTERNS.map(p => p.id), ATMOSPHERES.map(a => a.id));
+    const defaultAtmosphere = ATMOSPHERES.find(a => a.id === (link.atmosphereId ?? Preferences.get('atmosphereId'))) ?? ATMOSPHERES[0];
+    const defaultPattern = BREATHING_PATTERNS.find(p => p.id === link.patternId)
+      ?? (link.atmosphereId ? undefined : BREATHING_PATTERNS.find(p => p.id === Preferences.get('patternId')))
       ?? BREATHING_PATTERNS.find(p => p.id === defaultAtmosphere.recommendedPatternId)
       ?? BREATHING_PATTERNS[0];
     const savedDuration = Preferences.get('durationMinutes');
@@ -101,6 +104,10 @@ class ChromasyncApp {
       defaultAtmosphere
     );
     this.ui.setDurationSelection(initialDuration);
+    if (link.tuning) {
+      this.audio.setTuningAndBeat(link.tuning, defaultAtmosphere.recommendedBinauralBeat);
+      this.ui.updateTuningBadge(link.tuning);
+    }
     this.ui.updateSoundState(this.audio.getIsMuted());
 
     // Studio Reel Exporter (GPU + Web Audio Recording)
@@ -220,6 +227,15 @@ class ChromasyncApp {
       this.haptics.pulseCompletion();
       this.ui.showSessionComplete();
       this.a11y.announceMessage(t('a11y.complete'));
+    });
+
+    // rAF stops in the background, which would freeze the guide while the drone keeps playing:
+    // pause instead, and let the user resume explicitly when they come back
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden && this.engine.getState().isPlaying) {
+        this.handleTogglePlay();
+        this.audio.update(0, false);
+      }
     });
 
     // Window, viewport and orientation resize handling
