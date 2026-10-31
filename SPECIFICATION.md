@@ -1,6 +1,8 @@
 # CHROMASYNC — THE MASTER SPECIFICATION (v1.0)
 ## Complete Functional, Mathematical, Technical, and Architectural Blueprint
 
+> ⚠️ **Historical design document (v1.0).** Code excerpts and some details below predate later changes (translations, fractal calibration, binaural routing, corrected references). The current behaviour and verified references are in [README.md](README.md), [public/llms-full.txt](public/llms-full.txt) and the `/science/` pages.
+
 > **Application Name:** Chromasync — The Chromatic Breathing Companion  
 > **Bundle / Application ID:** `com.chromasync.app`  
 > **Platform Targets:** Modern Web (PWA), Android (APK/AAB), iOS (Xcode/IPA)  
@@ -53,7 +55,7 @@
 | **✨ Astral Void** | Deep Meditation | Deep Unwind ($4\text{s}$ In / $2\text{s}$ Hold / $6\text{s}$ Out) | $528\text{ Hz}$ Carrier · $5.5\text{ Hz}$ Theta | $400-450\text{ nm}$ + $650\text{ nm}$ | Cosmic Nebula + Star Glints |
 
 ### 2.2 Core Physiological Principles
-1. **0.10 Hz Baroreflex Resonance:** Inhaling for $5.5\text{s}$ and exhaling for $5.5\text{s}$ ($\sim 5.5 - 6.0\text{ breaths/min}$) matches the natural 10-second delay of the human baroreflex loop, maximizing Heart Rate Variability (HRV) and vagal stimulation (*Lehrer et al., 2020*).
+1. **Resonance breathing (~0.1 Hz):** Inhaling for 5.5 s and exhaling for 5.5 s (5.5 breaths/min, ≈0.09 Hz) is close to the average resonance frequency of the baroreflex loop (whose ~5 s delay makes it resonate near 0.1 Hz), where Heart Rate Variability peaks (*Vaschillo et al., 2006; Lehrer & Gevirtz, 2014*).
 2. **Vagal Tone Stimulation via Extended Exhalation:** Exhalation activates the parasympathetic vagus nerve, releasing acetylcholine onto the sinoatrial node to decelerate heart rate.
 3. **Curvature vs. Angularity (Bar & Neta):** Sharp corners trigger amygdala fear/threat circuits; smooth organic curves selectively engage the orbitofrontal cortex (safety & aesthetic pleasure).
 4. **Fractal Fluency (Richard Taylor):** Statistical natural fractals with fractal dimension $D \in [1.3, 1.5]$ reduce physiological stress by up to $60\%$ and elevate frontal EEG Alpha waves.
@@ -219,7 +221,7 @@ export const BREATHING_PATTERNS: BreathingPattern[] = [
   {
     id: 'sigh_huberman',
     name: 'Soupir Physiologique',
-    tagline: 'Chute immédiate du cortisol et du rythme cardiaque (Stanford 2023)',
+    tagline: 'Apaisement rapide du stress (Balban et al., 2023)',
     totalCycleDuration: 10.2,
     phases: [
       {

@@ -36,13 +36,13 @@ In an era saturated with noisy AI wrappers, 500 MB wellness downloads, intrusive
 
 ---
 
-## 🔬 Scientific Foundations & Multi-Sensory Matrix
+## 🔬 Scientific Foundations
 
-Chromasync bridges neuroaesthetics, psychoacoustics, and autonomic physiology to guide your cardiorespiratory system into natural coherence.
+Chromasync combines paced breathing, generative visuals and sound. Each claim below links to a page with its references; the [health notice](#️-health-notice) applies throughout.
 
 ```
        ┌─────────────────────────────────────────────────────────┐
-       │             0.10 Hz Baroreflex Coherence                │
+       │      Resonance breathing, 5.5 breaths/min (~0.1 Hz)     │
        │     (5.5s Inhalation  ───►  5.5s Exhalation)            │
        └───────────────────────────┬─────────────────────────────┘
                                    │
@@ -50,38 +50,41 @@ Chromasync bridges neuroaesthetics, psychoacoustics, and autonomic physiology to
          ▼                         ▼                         ▼
 ┌──────────────────┐     ┌──────────────────┐     ┌──────────────────┐
 │  Visual Shaders  │     │ Web Audio Engine │     │ Hardware Haptics │
-│  Fractal Fluency │     │ 432 / 528 Hz DSP │     │ Tactile Pulses   │
-│   (D ≈ 1.3-1.5)  │     │  Binaural Waves  │     │  (Eyes-Closed)   │
+│ Fractal visuals  │     │ 432/440/528 Hz   │     │ Tactile Pulses   │
+│ (measured D≈1.4) │     │ Binaural beats   │     │  (Eyes-Closed)   │
 └──────────────────┘     └──────────────────┘     └──────────────────┘
 ```
 
-> 📚 **Deep Scientific Research Papers & Formulations:**
-> - [0.10 Hz Baroreflex Coherence & Respiration Rate](https://chromasync-app.web.app/science/baroreflex-resonance-0-10hz)
-> - [Vagal Nerve Stimulation & Acetylcholine Release](https://chromasync-app.web.app/science/vagus-nerve-acetylcholine)
-> - [Box Breathing & Autonomic Regulation](https://chromasync-app.web.app/science/box-breathing-autonomic-regulation)
-> - [432 Hz vs 440 Hz Acoustic Physics & Psychoacoustics](https://chromasync-app.web.app/science/432hz-vs-440hz-acoustic-physics)
-> - [Binaural Beats & Neural Brainwave Entrainment](https://chromasync-app.web.app/science/binaural-beats-theta-entrainment)
+> 📚 **Science pages:**
+> - [Resonance Breathing (~0.1 Hz) & Heart Rate Variability](https://chromasync-app.web.app/science/baroreflex-resonance-0-10hz)
+> - [The Vagus Nerve and the Long Exhale](https://chromasync-app.web.app/science/vagus-nerve-acetylcholine)
+> - [Box Breathing (4-4-4-4): What It Does and What It Does Not](https://chromasync-app.web.app/science/box-breathing-autonomic-regulation)
+> - [432 Hz vs 440 Hz: Physics, Myths and Studies](https://chromasync-app.web.app/science/432hz-vs-440hz-acoustic-physics)
+> - [Binaural Beats: How They Work and What the Evidence Says](https://chromasync-app.web.app/science/binaural-beats-theta-entrainment)
 
-### 1. 0.10 Hz Cardiorespiratory Resonance
-The human arterial baroreflex feedback loop operates with an intrinsic ~10-second latency. Breathing at **6 breaths per minute ($0.10\text{ Hz}$)** synchronizes heart rate fluctuations (Respiratory Sinus Arrhythmia) with blood pressure oscillations (Mayer waves), maximizing Heart Rate Variability (HRV) and stimulating parasympathetic vagal outflow (*Lehrer et al., 2020*).
+### 1. Resonance breathing
+The arterial baroreflex reacts with a delay of about 5 seconds, so it resonates near 0.1 Hz. Breathing close to that rate (4.5–7 breaths per minute, about 5.5 on average) makes the heart-rate swings of breathing and of the baroreflex reinforce each other, which maximises heart rate variability (Vaschillo et al., 2006; Lehrer & Gevirtz, 2014). Chromasync paces 5.5 s in / 5.5 s out. HRV biofeedback built on this breathing shows small-to-moderate benefits in a meta-analysis (Lehrer et al., 2020).
 
-### 2. Vagal Nerve Stimulation via Prolonged Exhalation
-During exhalation, the vagus nerve releases acetylcholine onto the sinoatrial node, decelerating heart rate. Chromasync includes specialized asymmetric patterns (**4-7-8 Relax** and **Deep Unwind**) to accelerate autonomic recovery and sleep onset.
+### 2. Long exhalation
+The vagus nerve slows the heart mainly during exhalation (Eckberg, 2003). **4-7-8 Relax** and **Deep Unwind** lengthen the out-breath to lean on this effect. They are popular for winding down, but direct evidence for 4-7-8 is limited to small studies.
 
-### 3. Neuroaesthetic Fractal Fluency ($D \approx 1.4$)
-Research by physicist Richard Taylor demonstrates that natural statistical fractals with a dimension of $D \in [1.3, 1.5]$ are associated with higher alpha EEG activity and lower self-reported stress in viewers. Chromasync's fluid shaders use fractional Brownian motion (fBm) tuned to this aesthetic window.
+### 3. Fractal visuals (measured, not assumed)
+Richard Taylor's research links natural fractals with a dimension of D ≈ 1.3–1.5 to easier visual processing and lower stress. Chromasync's shader parameters are calibrated so the rendered contours measure **D ≈ 1.37–1.42 by box-counting** in all five atmospheres, and the end-to-end test fails if any mode leaves that range. Before this calibration the visuals measured D ≈ 1.7.
+
+### 4. Sound
+The 432/528 Hz tunings and binaural beats are offered as preferences: the studies behind them are small pilots, and evidence that binaural beats entrain brainwaves is mixed (Ingendoh et al., 2023). Binaural beats need headphones; Chromasync keeps left and right strictly separated so they are real binaural beats.
 
 ---
 
 ## 🎨 The 5 Unified Atmospheres
 
-| Atmosphere | Respiration Pattern | Carrier & Binaural Beat | Dominant Wavelengths | Procedural Shader Dynamics |
+| Atmosphere | Breathing Pattern | Tuning & Binaural Beat | Palette | Shader |
 |:---|:---|:---|:---|:---|
-| **🌌 Celestial Aurora** | **Coherence** (5.5s In / 5.5s Out) | $432\text{ Hz}$ Carrier · $5.5\text{ Hz}$ Theta | Peach / Gold ($590-640\text{ nm}$) | $D=1.4$ fBm Domain Warping Fluid |
-| **🌊 Oceanic Tide** | **Box** (4s In / 4s Hold / 4s Out / 4s Hold) | $528\text{ Hz}$ Carrier · $10.0\text{ Hz}$ Alpha | Cyan / Sapphire ($470-510\text{ nm}$) | Liquid Voronoi Caustics |
-| **🌧️ Forest Rain** | **Deep Unwind** (4s In / 2s Hold / 6s Out) | $432\text{ Hz}$ Carrier · $5.5\text{ Hz}$ Theta | Canopy Green ($520-550\text{ nm}$) | Dappled Rain Ripple Rings |
-| **🕯️ Warm Hearth** | **4-7-8 Relax** (4s In / 7s Hold / 8s Out) | $432\text{ Hz}$ Carrier · $4.0\text{ Hz}$ Theta | Amber / Terracotta ($620-700\text{ nm}$) | Incandescent Rising Embers |
-| **✨ Astral Void** | **Physiological Sigh** (3s In / 1.2s Top-up / 6s Out) | $528\text{ Hz}$ Carrier · $5.5\text{ Hz}$ Theta | Violet / Indigo ($400-450\text{ nm}$) | Cosmic Nebula & Star Glints |
+| **🌌 Celestial Aurora** | **Resonance** (5.5s In / 5.5s Out) | 432 Hz · 5.5 Hz | Peach / gold | Domain-warped fBm fluid |
+| **🌊 Oceanic Tide** | **Box** (4s In / 4s Hold / 4s Out / 4s Hold) | 528 Hz · 10 Hz | Cyan / sapphire | Liquid caustics |
+| **🌧️ Forest Rain** | **Deep Unwind** (4s In / 2s Hold / 6s Out) | 432 Hz · 5.5 Hz | Canopy green | Rain ripple rings |
+| **🕯️ Warm Hearth** | **4-7-8 Relax** (4s In / 7s Hold / 8s Out) | 432 Hz · 4 Hz | Amber, <1% of a white screen's blue light | Rising embers |
+| **✨ Astral Void** | **Physiological Sigh** (3s In / 1.2s Top-up / 6s Out) | 528 Hz · 5.5 Hz | Violet / indigo | Nebula & star glints |
 
 ---
 

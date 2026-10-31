@@ -44,7 +44,7 @@ const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 63
     
     <!-- Pills Badge -->
     <rect x="360" y="535" width="480" height="36" rx="18" fill="#1e2433" fill-opacity="0.8" stroke="#334155" stroke-width="1" />
-    <text x="600" y="559" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, monospace" font-size="14" font-weight="400" fill="#38bdf8" letter-spacing="1.5">0.10 Hz BAROREFLEX RESONANCE • ~40 KB ZERO-BLOAT • PROCEDURAL DSP</text>
+    <text x="600" y="559" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, monospace" font-size="14" font-weight="400" fill="#38bdf8" letter-spacing="1.5">~0.1 Hz RESONANCE BREATHING • ~40 KB ZERO-BLOAT • PROCEDURAL DSP</text>
   </g>
 </svg>`;
 

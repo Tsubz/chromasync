@@ -1,63 +1,55 @@
-# CHROMASYNC — FULL SCIENTIFIC & TECHNICAL SPECIFICATION (FOR AI AGENTS & RESEARCHERS)
+# CHROMASYNC — TECHNICAL & SCIENTIFIC NOTES (FOR AI AGENTS & RESEARCHERS)
 
 > Canonical URL: https://chromasync-app.web.app
 > Repository: https://github.com/Tsubz/chromasync
-> Architecture: Pure TypeScript, WebGL GLSL, Web Audio API, Capacitor. Zero external media files.
+> Stack: TypeScript (no UI framework), WebGL GLSL, Web Audio API, Capacitor for Android/iOS.
+> Status: relaxation tool, not a medical device.
 
 ---
 
-## 1. Physiological Foundations & Mathematical Formulations
+## 1. Breathing Patterns
 
-### 1.1 Baroreflex Resonance Frequency (0.10 Hz)
-The human arterial baroreflex system exhibits an intrinsic closed-loop delay of approximately 10 seconds. Respiration at:
-$$f_r = \frac{1}{10\text{ s}} = 0.10\text{ Hz} \approx 6.0\text{ breaths per minute}$$
-induces phase synchronization between Respiratory Sinus Arrhythmia (RSA) and Mayer waves of arterial pressure. This state of resonance produces maximum Heart Rate Variability (HRV), enhancing vagal nerve outflow and baroreflex gain (Lehrer et al., 2020; Vaschillo et al., 2006).
+| Pattern | Phases | Rate | Main reference |
+|:---|:---|:---|:---|
+| Resonance Breathing | 5.5 s in / 5.5 s out | 5.5 breaths/min (≈0.09 Hz) | Lehrer & Gevirtz 2014; Lin et al. 2014; Lehrer et al. 2020 |
+| Physiological Sigh | 3 s in + 1.2 s top-up in / 6 s out | ≈5.9 breaths/min | Balban et al., Cell Reports Medicine 2023 |
+| Box | 4 / 4 / 4 / 4 s | 3.75 breaths/min | Balban et al. 2023; Marchant et al. 2025 |
+| 4-7-8 Relax | 4 s in / 7 s hold / 8 s out | ≈3.2 breaths/min | Vierra et al., Physiol. Rep. 2022 (small trial) |
+| Deep Unwind | 4 s in / 2 s hold / 6 s out | 5 breaths/min | Gerritsen & Band, Front. Hum. Neurosci. 2018 |
+| Free Breath | user-paced (touch and hold) | — | — |
 
-### 1.2 Vagal Activation via Asymmetric Exhalation
-Inspiration causes transient suppression of vagal motor tone at the nucleus ambiguus, accelerating heart rate. Expiration reinstates acetylcholine release at the sinoatrial node, slowing heart rate. Chromasync patterns like:
-- **4-7-8 Relax:** 4.0s Inhale, 7.0s Hold, 8.0s Exhale (ratio 1 : 1.75 : 2)
-- **Deep Unwind:** 4.0s Inhale, 2.0s Hold, 6.0s Exhale (ratio 1 : 0.5 : 1.5)
-prolong acetylcholine exposure, lowering systemic sympathetic tone and cortisol.
+### 1.1 Resonance breathing
+The arterial baroreflex responds with a delay of about 5 s, so the loop resonates near 0.1 Hz (period ≈10 s). Breathing near this frequency makes respiratory sinus arrhythmia and baroreflex oscillations reinforce each other, which maximises HRV (Vaschillo et al., 2006). Individual resonance frequencies range from about 4.5 to 7 breaths/min, averaging ≈5.5 in adults; Chromasync uses 5.5. A 2025 comparison found 6 breaths/min raised HRV more than box or 4-7-8 breathing, with no single-session change in blood pressure or mood, and some mild over-breathing (Marchant et al., 2025).
 
-### 1.3 Neuroaesthetics & Statistical Fractal Fluency
-Natural fractal patterns possessing statistical scale-invariance with fractal dimension $D \in [1.3, 1.5]$ induce maximal alpha EEG power in parietal and frontal cortices while simultaneously decreasing sympathetic skin conductance (Taylor, 2021). Chromasync's GPU fragment shaders employ fractional Brownian motion (fBm) domain warping calibrated to $D \approx 1.4$.
-
----
-
-## 2. Audio Synthesis Engine (Procedural DSP)
-
-Chromasync downloads zero audio samples. Every waveform is calculated dynamically using the Web Audio API:
-
-### 2.1 Acoustic Carrier Tuning & Equal Temperament
-- **Verdi Tuning ($A = 432\text{ Hz}$):** Produces natural integer harmonic ratios ($C_4 \approx 256\text{ Hz}$, $2^8$), reducing psychoacoustic dissonance.
-- **Solfeggio Resonance ($528\text{ Hz}$):** Used for cognitive clarity and sustained meditation.
-- **Standard Concert Pitch ($A = 440\text{ Hz}$):** Standard neutral baseline.
-
-### 2.2 Binaural Entrainment Mechanism
-Two sinusoidal carriers $f_L$ and $f_R$ are routed independently to left and right stereo channels:
-$$\Delta f = |f_R - f_L|$$
-- **Theta Band ($\Delta f = 5.5\text{ Hz}$ / $\Delta f = 4.0\text{ Hz}$):** Promotes hypnagogic calm, deep meditation, and sleep transition.
-- **Alpha Band ($\Delta f = 10.0\text{ Hz}$):** Promotes relaxed alertness and calm cognitive focus.
-
-### 2.3 Atmospheric Generative Soundscapes
-- **Oceanic Surge:** Brownian noise generated via spectral integration filtered through dual resonant bandpass filters dynamically modulated by breath phase progress $P(t) \in [0, 1]$.
-- **Forest Raindrops:** Poisson-distributed stochastic impulses triggering high-Q damped resonant bandpass filters ($1.2\text{ kHz} - 3.8\text{ kHz}$) simulating physical droplets impacting canopy foliage.
-- **Tibetan Singing Bowl Bell:** Additive modal synthesis of 4 non-harmonic partials ($f_0, 2.76 f_0, 5.40 f_0, 8.93 f_0$) with exponential decay envelopes on cycle completion.
-- **Warm Hearth Crackle:** Sparse shot noise simulating thermal timber micro-fractures.
+### 1.2 Long exhalation
+Vagal outflow to the heart is gated by respiration: partly blocked during inspiration, released during expiration (Eckberg, 2003). Acetylcholine acting on M2 receptors at the sinoatrial node slows the heart. Long-exhale patterns use this mechanism; clinical evidence specific to 4-7-8 remains limited.
 
 ---
 
-## 3. Visual Synthesis Engine (WebGL GLSL)
+## 2. Visual Engine (WebGL)
 
-- **Resolution Independence:** Full viewport fragment shaders rendered across native device DPR with canvas downscaling options for power efficiency.
-- **Mathematical Color Spaces:** Real-time OKLab color mixing preventing muddy RGB intermediates during breath color transitions.
-- **Fluid Mechanics:** Vorticity-preserving 2D Navier-Stokes approximations and multi-octave simplex noise domain warping.
-- **OLED Pure Black Mode:** Clamps all non-essential UI and canvas background luminance to absolute `#000000` ($0\text{ cd/m}^2$) for nocturnal and eyes-closed sensory deprivation.
+- One full-screen fragment shader with five modes (aurora fluid, water caustics, rain ripples, embers, stars), driven by the breath state.
+- **Fractal calibration:** fBm with octave gain 0.44, lacunarity 2.05 and domain-warp strengths 1.4 / 1.2. The box-counting dimension of the rendered iso-luminance contours (40th–60th percentiles, box sizes 8–128 px) measures D ≈ 1.37–1.42 across all five modes. The method was validated on a circle (1.04) and spectral fBm references (H = 0.8 / 0.6 / 0.4 → 1.27 / 1.40 / 1.57). The end-to-end test fails if any mode leaves 1.3–1.5. Target range from Taylor's fractal-fluency research (Taylor et al., Front. Hum. Neurosci. 2011).
+- Colors are blended linearly in RGB during atmosphere transitions.
+- Canvas resolution follows the device pixel ratio, capped at 2.
+- Warm Hearth palette: blue output ≈0.5% of a white screen (linear sRGB), for evening use (blue light and melatonin: Lockley et al., 2003).
+- OLED mode turns the screen fully black for eyes-closed sessions.
 
 ---
 
-## 4. Privacy, Security & Resource Efficiency
-- **Trackers & Telemetry:** Absolutely zero external scripts, zero Google Analytics, zero Facebook Pixel, zero user profiling.
-- **Data Persistence:** 100% localStorage on-device for session preferences. No user credentials, accounts, or cloud database storage required.
-- **Battery & Thermal Footprint:** GPU render loop throttles intelligently when idle and leverages Web Screen Wake Lock API only during active breath guidance.
-- **PWA & Offline Capability:** Full ServiceWorker caching enables 100% offline functionality in airplane mode or disconnected environments.
+## 3. Audio Engine (Web Audio)
+
+- **Ambient chord:** five voices at 0.25, 0.375, 0.5, 0.5625 and 0.625 × the reference pitch (432, 440 or 528 Hz), i.e. about 108–270 Hz at 432 Hz, through a breath-controlled low-pass filter and a procedurally generated stereo reverb.
+- **Binaural beats:** each voice is a left/right pair separated by 4, 5.5 or 10 Hz and hard-panned (measured crosstalk below −90 dB). A shared slow pitch drift keeps the interaural difference exact. Headphones required; entrainment evidence is mixed (Ingendoh et al., PLoS ONE 2023; Garcia-Argibay et al., Psychol. Res. 2019).
+- **Tuning evidence:** 432 Hz (Calamassi & Pomponi 2019; Calamassi et al. 2020; Aravena et al. 2020) and 528 Hz (Akimoto et al. 2018, n = 9) are small pilot studies.
+- **Soundscapes:** stereo pink noise beds; Minnaert-model bubble chirps for the ocean (f ≈ 3 kHz·mm / radius); stochastic leaf and needle droplets (≈520–900 Hz and 1.8–3.2 kHz) for rain; crackle bursts for the hearth; crystalline partials for the astral mode.
+- **Session end:** a singing bowl from inharmonic partials (1, 2.76, 5.40, 8.93 × f0, with slightly detuned pairs for beating).
+- No audio files are downloaded.
+
+---
+
+## 4. Privacy & Offline
+- No analytics, no third-party requests (fonts are self-hosted), no accounts.
+- Preferences (language, atmosphere, rhythm, duration, mute) are stored in localStorage on the device only.
+- A service worker precaches the app shell at build time; the app works offline after the first visit.
+- The screen wake lock is held only while a session is playing; the session pauses when the app goes to the background.

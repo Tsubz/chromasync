@@ -4,7 +4,7 @@ import { spawnSync } from 'child_process';
 
 /**
  * Chromasync Studio Reel Synthesizer
- * Generates 330 sequential frames (30 fps for 11 seconds = 1 complete 0.10 Hz cycle)
+ * Generates 330 sequential frames (30 fps for 11 seconds = 1 complete 5.5 s in / 5.5 s out cycle)
  * accurately reflecting the Chromasync UI, WebGL aura, and 432 Hz binaural audio.
  */
 
@@ -210,7 +210,7 @@ for (let i = 0; i < totalFrames; i++) {
 
   <!-- Scientific Quality Footer -->
   <text x="540" y="1840" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', monospace" font-size="16" font-weight="500" fill="#38bdf8" letter-spacing="2">
-    0.10 Hz BAROREFLEX COHERENCE • 18.5 KB • ZERO EXTERNAL AUDIO
+    ~0.1 Hz RESONANCE BREATHING • ~41 KB • ZERO EXTERNAL AUDIO
   </text>
 </svg>`;
 

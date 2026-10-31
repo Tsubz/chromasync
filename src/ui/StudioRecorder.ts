@@ -171,7 +171,7 @@ export class StudioRecorder {
 
       ctx.fillStyle = '#38bdf8';
       ctx.font = '500 18px "Plus Jakarta Sans", monospace';
-      ctx.fillText('0.10 Hz BAROREFLEX RESONANCE • 432 Hz', cx, 185);
+      ctx.fillText('~0.1 Hz RESONANCE BREATHING • 432 Hz', cx, 185);
 
       requestAnimationFrame(drawFrame);
     };

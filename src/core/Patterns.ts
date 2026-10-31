@@ -50,7 +50,7 @@ function definePattern(def: PatternDefinition): BreathingPattern {
 export const BREATHING_PATTERNS: BreathingPattern[] = [
   definePattern({
     id: 'sigh_huberman',
-    scientificSource: 'Stanford Medicine / Cell Reports Medicine (Balban, Huberman, Spiegel, 2023)',
+    scientificSource: 'Balban et al., Cell Reports Medicine 2023 (cyclic sighing, randomized trial)',
     recommendedAtmosphereId: 'astral',
     phases: [
       { type: 'inhale', duration: 3.0 },
@@ -61,7 +61,7 @@ export const BREATHING_PATTERNS: BreathingPattern[] = [
   }),
   definePattern({
     id: 'coherence_55',
-    scientificSource: 'Cardiopulmonary Resonance / Front. Public Health (Lehrer et al., 2020)',
+    scientificSource: 'Lehrer & Gevirtz, Front. Psychol. 2014 · Lehrer et al., Appl. Psychophysiol. Biofeedback 2020 (meta-analysis)',
     recommendedAtmosphereId: 'aurora',
     phases: [
       { type: 'inhale', duration: 5.5 },
@@ -70,7 +70,7 @@ export const BREATHING_PATTERNS: BreathingPattern[] = [
   }),
   definePattern({
     id: 'box_4444',
-    scientificSource: 'Autonomic Homeostasis & Tactical Equanimity (Grossman et al., 2004)',
+    scientificSource: 'Balban et al., Cell Reports Medicine 2023 (box breathing arm)',
     recommendedAtmosphereId: 'ocean',
     phases: [
       { type: 'inhale', duration: 4 },
@@ -81,7 +81,7 @@ export const BREATHING_PATTERNS: BreathingPattern[] = [
   }),
   definePattern({
     id: 'relax_478',
-    scientificSource: 'Integrative Vagal Stimulation (Dr. Andrew Weil, 2010)',
+    scientificSource: 'Popularized by Dr. Andrew Weil · small trial: Vierra et al., Physiol. Rep. 2022',
     recommendedAtmosphereId: 'hearth',
     phases: [
       { type: 'inhale', duration: 4 },
@@ -91,7 +91,7 @@ export const BREATHING_PATTERNS: BreathingPattern[] = [
   }),
   definePattern({
     id: 'sleep_426',
-    scientificSource: 'Parasympathetic Sleep Induction (Gerritsen & Band, 2018)',
+    scientificSource: 'Respiratory vagal stimulation model (Gerritsen & Band, Front. Hum. Neurosci. 2018)',
     recommendedAtmosphereId: 'rain',
     phases: [
       { type: 'inhale', duration: 4 },
@@ -101,7 +101,7 @@ export const BREATHING_PATTERNS: BreathingPattern[] = [
   }),
   definePattern({
     id: 'free_flow',
-    scientificSource: 'Interoceptive Autonomic Self-Regulation & Tactile Biofeedback (Critchley et al., 2013)',
+    scientificSource: 'Interoception (Critchley & Harrison, Neuron 2013)',
     recommendedAtmosphereId: 'aurora',
     phases: [
       { type: 'inhale', duration: 4.5 },
