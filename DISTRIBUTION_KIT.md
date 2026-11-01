@@ -8,6 +8,8 @@
 
 Ready-to-paste listing texts live in [`fastlane/metadata/android/`](fastlane/metadata/android) (English `en-US`, French `fr-FR`), in the standard fastlane layout: `title.txt` (≤30 chars), `short_description.txt` (≤80), `full_description.txt` (≤4000).
 
+Store graphics are in `fastlane/metadata/android/<lang>/images/`: 512×512 icon, 1024×500 feature graphic, five 1080×2160 phone screenshots per language. Step-by-step release guide: [docs/RELEASING.md](docs/RELEASING.md).
+
 Play Console checklist for a wellness app:
 - **Category:** Health & Fitness. **Contains ads:** No. **In-app purchases:** No.
 - **Privacy policy URL:** https://chromasync-app.web.app/privacy

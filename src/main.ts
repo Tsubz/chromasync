@@ -13,6 +13,7 @@ import { UIController } from './ui/UIController';
 import { KeyboardShortcuts } from './ui/KeyboardShortcuts';
 import { StudioRecorder } from './ui/StudioRecorder';
 import { App } from '@capacitor/app';
+import { Capacitor } from '@capacitor/core';
 import { applyStaticTranslations, getLocale, setLocale, t } from './i18n';
 import { Preferences } from './core/Preferences';
 import { SessionDurationMinutes } from './core/SessionTimer';
@@ -313,7 +314,8 @@ class ChromasyncApp {
 
   private registerServiceWorker(): void {
     // Only register service worker in production builds to prevent dev/remote-session caching issues
-    if (import.meta.env.PROD && 'serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
+    // The native app ships its files inside the APK: no service worker needed there
+    if (import.meta.env.PROD && !Capacitor.isNativePlatform() && 'serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/sw.js').then((reg) => {
           reg.update();
