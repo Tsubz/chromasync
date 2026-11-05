@@ -1,0 +1,25 @@
+Chromasync is a calm, single-purpose breathing companion. Living light and generative sound expand and settle with each breath, so you can follow the rhythm with your eyes open, or closed with gentle vibrations.
+
+BREATHING PATTERNS
+• Resonance breathing: adjustable from 4.5 to 7 breaths per minute (5.5 by default), the range where heart-rate variability peaks for most adults.
+• Physiological sigh: a double inhale and a long exhale.
+• Box breathing (4-4-4-4).
+• 4-7-8 Relax and Deep Unwind (4-2-6), with an option to shorten breath holds.
+• Free Breath: no tempo, hold the screen to inhale and release to exhale.
+
+FIVE ATMOSPHERES
+Aurora, Ocean, Forest Rain, Warm Hearth and Astral Void. Each pairs visuals, ambient sound and a matching rhythm. Warm Hearth uses an amber palette with very little blue light for evenings.
+
+DESIGNED TO GET OUT OF THE WAY
+• Session timer (3, 5 or 10 minutes, or unlimited) that ends on a full breath.
+• Pure-black "eyes closed" mode with vibration cues.
+• Optional 432 / 440 / 528 Hz tunings and headphone binaural beats.
+• English and French.
+
+PRIVATE BY DESIGN
+No account, no ads, no analytics, no tracking. Your settings stay on your device. Works offline. Free and open source.
+
+THE SCIENCE, HONESTLY
+Each pattern links to the research behind it, with its limits: for example, studies on 432 Hz music are small pilots, and evidence that binaural beats change brainwaves is mixed.
+
+Chromasync is a relaxation tool, not a medical device. It does not diagnose or treat any condition. Stop if you feel dizzy, and ask a doctor before breath-holding exercises if you are pregnant or have a heart or respiratory condition.

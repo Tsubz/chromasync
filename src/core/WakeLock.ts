@@ -5,8 +5,9 @@ interface KeepAwakePlugin {
   allowSleep(): Promise<void>;
 }
 
-// Native Android implementation (android/.../KeepAwakePlugin.java): WebView support for
-// the Screen Wake Lock API is unreliable, so the app sets FLAG_KEEP_SCREEN_ON instead
+// Native implementations: android/.../KeepAwakePlugin.java (FLAG_KEEP_SCREEN_ON) and
+// ios/App/App/MainViewController.swift (isIdleTimerDisabled). The web Screen Wake Lock API
+// is not reliably available inside the platform WebViews.
 const KeepAwake = registerPlugin<KeepAwakePlugin>('KeepAwake');
 
 export class WakeLockManager {

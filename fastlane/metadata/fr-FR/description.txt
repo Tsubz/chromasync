@@ -1,0 +1,25 @@
+Chromasync est un compagnon de respiration calme et sans distraction. Une lumière vivante et un son génératif s'ouvrent et se posent à chaque respiration : suivez le rythme les yeux ouverts, ou fermés grâce à de douces vibrations.
+
+RYTHMES DE RESPIRATION
+• Cohérence cardiaque : réglable de 4,5 à 7 respirations par minute (5,5 par défaut), la plage où la variabilité cardiaque culmine chez la plupart des adultes.
+• Soupir physiologique : double inspiration et longue expiration.
+• Respiration carrée (4-4-4-4).
+• 4-7-8 Relax et Deep Unwind (4-2-6), avec une option pour raccourcir les rétentions.
+• Souffle libre : aucun tempo, maintenez l'écran pour inspirer et relâchez pour expirer.
+
+CINQ ATMOSPHÈRES
+Aurore, Océan, Pluie en forêt, Âtre et Vide astral. Chacune associe visuels, ambiance sonore et rythme adapté. L'Âtre utilise une palette ambrée très pauvre en lumière bleue, pour le soir.
+
+PENSÉ POUR S'EFFACER
+• Minuteur de séance (3, 5 ou 10 minutes, ou illimité) qui se termine sur une respiration complète.
+• Mode « yeux fermés » noir absolu, guidé par vibrations.
+• Accords 432 / 440 / 528 Hz et battements binauraux au casque, en option.
+• Français et anglais.
+
+RESPECT DE LA VIE PRIVÉE
+Aucun compte, aucune publicité, aucune statistique, aucun pistage. Vos réglages restent sur votre appareil. Fonctionne hors-ligne. Gratuit et open source.
+
+LA SCIENCE, EN TOUTE HONNÊTETÉ
+Chaque rythme renvoie aux études qui le fondent, avec leurs limites : par exemple, les études sur la musique à 432 Hz sont de petites études pilotes, et l'effet des battements binauraux sur les ondes cérébrales reste incertain.
+
+Chromasync est un outil de relaxation, pas un dispositif médical. Il ne diagnostique ni ne traite aucune maladie. Arrêtez en cas de vertige, et demandez l'avis d'un médecin avant les exercices de rétention si vous êtes enceinte ou souffrez d'un trouble cardiaque ou respiratoire.

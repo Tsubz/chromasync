@@ -1,4 +1,4 @@
-# Releasing Chromasync on Android
+# Releasing Chromasync (Android & iOS)
 
 The web app deploys itself on every push to `main`. The Android app is released from a **git tag**: pushing `vX.Y.Z` runs two workflows:
 
@@ -60,3 +60,55 @@ Then promote the build from *internal* to *production* in Play Console once it h
 ## Regenerating store assets
 
 Icons and splash screens in `android/app/src/main/res` and `fastlane/metadata/android/*/images` were generated from `public/icon.svg`. Screenshots are 1080×2160 captures of the app (Play allows at most a 2:1 ratio).
+
+---
+
+# iOS (App Store)
+
+Pushing a `vX.Y.Z` tag also runs **Deploy iOS to App Store Connect** (`deploy-appstore.yml`, on a macOS runner): it archives the app with automatic (cloud-managed) signing and uploads it to App Store Connect, where it appears in TestFlight after Apple's processing. Every pull request compiles the iOS app for the simulator (CI job `ios`).
+
+Version and build number follow the same rules as Android (tag without `v`, commit count).
+
+## One-time setup
+
+### 1. Apple Developer Program
+Enroll at developer.apple.com (99 USD/year). Note your **Team ID** (Membership details).
+
+### 2. Register the app
+- Certificates, Identifiers & Profiles → Identifiers → **+** → App ID `com.chromasync.app` (no extra capability needed).
+- App Store Connect → My Apps → **+** → New App: platform iOS, name *Chromasync: Breathing Guide*, primary language English, bundle ID `com.chromasync.app`, SKU `chromasync`.
+
+### 3. App Store Connect API key
+App Store Connect → Users and Access → Integrations → App Store Connect API → **+**, role **Admin** (needed for cloud-managed signing). Download the `.p8` file (only once possible) and note the **Key ID** and **Issuer ID**.
+
+### 4. GitHub secrets
+
+| Secret | Value |
+|:---|:---|
+| `APPLE_TEAM_ID` | your 10-character Team ID |
+| `APP_STORE_CONNECT_API_KEY_ID` | Key ID |
+| `APP_STORE_CONNECT_API_ISSUER_ID` | Issuer ID |
+| `APP_STORE_CONNECT_API_KEY_P8_BASE64` | output of `base64 -i AuthKey_XXXX.p8` |
+
+### 5. Store listing (App Store Connect → the app)
+Everything is prepared in `fastlane/` (fastlane *deliver* layout), English and French:
+
+- `fastlane/metadata/<lang>/`: `name.txt`, `subtitle.txt`, `keywords.txt`, `promotional_text.txt`, `description.txt`, `release_notes.txt`, `privacy_url.txt`, `support_url.txt`, `marketing_url.txt`
+- `fastlane/metadata/`: `primary_category.txt` (Health & Fitness), `secondary_category.txt` (Lifestyle), `copyright.txt`, `review_information/notes.txt` (paste into "Notes" for App Review)
+- `fastlane/screenshots/<lang>/`: iPhone 6.9" (1320×2868) and iPad 13" (2064×2752), five each
+
+Either paste them by hand, or run `fastlane deliver` locally with the same API key.
+
+Also fill in:
+- **App Privacy**: "Data Not Collected". The app ships a privacy manifest (`ios/App/App/PrivacyInfo.xcprivacy`) saying the same.
+- **Age rating**: 4+ (no objectionable content).
+- **Export compliance**: answered in the app (`ITSAppUsesNonExemptEncryption = NO`), no question per build.
+- **Price**: Free.
+
+### 6. First build
+Run the workflow once (Actions → Deploy iOS to App Store Connect → Run workflow) or push a tag. Test the build in TestFlight on an iPhone, then submit it for review from App Store Connect.
+
+## Review notes
+- The app is a web app in a native shell; it adds native features (haptics, screen kept awake during sessions, offline use, audio session that plays with the silent switch on). This addresses guideline 4.2 (minimum functionality).
+- Health claims stay modest and the description ends with a "not a medical device" disclaimer (guideline 1.4.1). Keep it that way in future copy.
+
