@@ -1,0 +1,1 @@
+No account or login is needed. Tap the screen to start a breathing session; the info button (i) shows the science notes and the rhythm settings. Sound plays through the speaker or headphones (binaural beats need headphones). The app collects no data and makes no network requests besides loading its own bundled files.

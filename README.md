@@ -113,6 +113,7 @@ Chromasync is packaged natively with **Capacitor 8**:
 - **Direct Android APK:** Download the signed `.apk` directly from the [Releases](https://github.com/Tsubz/chromasync/releases) section.
 - **Web App (PWA):** Open [chromasync-app.web.app](https://chromasync-app.web.app) in Safari (iOS) or Chrome (Android) and tap **"Add to Home Screen"** for a full offline app experience.
 - **Google Play Store:** signed AAB pipeline, store listing and graphics ready (EN/FR). See [docs/RELEASING.md](docs/RELEASING.md) for the one-time setup and how to release.
+- **Apple App Store:** TestFlight upload pipeline with cloud signing, App Store listing and iPhone/iPad screenshots ready (EN/FR). Same guide.
 
 ---
 
