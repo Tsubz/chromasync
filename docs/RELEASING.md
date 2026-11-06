@@ -57,6 +57,10 @@ git push origin main --tags
 
 Then promote the build from *internal* to *production* in Play Console once it has been checked on a real device.
 
+For production, prefer a **staged rollout**: run *Deploy Android to Google Play* by hand with track `production` and rollout `0.1` (10% of users), watch Android vitals for a day or two, then widen it in Play Console. The *What's new* text comes from `distribution/whatsnew/` (one file per language, 500 characters max); update it with each release.
+
+Before the first launch, go through [LAUNCH_CHECKLIST.md](LAUNCH_CHECKLIST.md): branch protection, device tests, key backups, rollback plan.
+
 ## Regenerating store assets
 
 Icons and splash screens in `android/app/src/main/res` and `fastlane/metadata/android/*/images` were generated from `public/icon.svg`. Screenshots are 1080×2160 captures of the app (Play allows at most a 2:1 ratio).
