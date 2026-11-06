@@ -6,6 +6,7 @@ export interface PreferenceValues {
   muted: boolean;
   resonanceBpm: number;
   gentleHolds: boolean;
+  onboarded: boolean;
 }
 
 const STORAGE_KEY = 'chromasync:prefs:v1';

@@ -1,6 +1,7 @@
 import { Atmosphere, RGBColor } from '../core/Atmospheres';
 import { BreathState } from '../core/BreathingEngine';
 import { CanvasFallback } from './CanvasFallback';
+import { AdaptiveResolution } from './AdaptiveResolution';
 import vertexSource from './shaders/vertex.glsl?raw';
 import fragmentSource from './shaders/fragment.glsl?raw';
 
@@ -27,6 +28,10 @@ export class ShaderRenderer {
   private uGrainLoc: WebGLUniformLocation | null = null;
   // Anti-banding film grain; `?nograin` turns it off so tests can measure the pattern itself
   private lastRenderTime: number = 0;
+  // Lowers the internal resolution on devices that cannot keep up (`?quality=full` disables it,
+  // e.g. for the fractal-dimension measurement in the e2e test)
+  private readonly adaptive: AdaptiveResolution | null =
+    new URLSearchParams(window.location.search).get('quality') === 'full' ? null : new AdaptiveResolution();
   private grainAmount: number = new URLSearchParams(window.location.search).has('nograin') ? 0.0 : 0.022;
 
   // Touch tracking state
@@ -213,7 +218,7 @@ export class ShaderRenderer {
   }
 
   public resize(): void {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const dpr = Math.min(window.devicePixelRatio || 1, 2) * (this.adaptive?.scale ?? 1);
     const clientW = this.canvas.clientWidth || window.innerWidth || 360;
     const clientH = this.canvas.clientHeight || window.innerHeight || 640;
     const width = Math.max(1, Math.floor(clientW * dpr));
@@ -232,8 +237,14 @@ export class ShaderRenderer {
     const timeInSeconds = timestamp * 0.001;
     // Animations advance with real time, so they run at the same speed on 60/120 Hz screens
     // and when frames are skipped to save battery
-    const dt = this.lastRenderTime ? Math.min(0.1, (timestamp - this.lastRenderTime) / 1000) : 1 / 60;
+    const interval = this.lastRenderTime ? timestamp - this.lastRenderTime : 0;
+    const dt = interval ? Math.min(0.1, interval / 1000) : 1 / 60;
     this.lastRenderTime = timestamp;
+
+    // Only judge performance while every frame is rendered (paused sessions render at ~20 fps)
+    if (this.adaptive && this.gl && state.isPlaying && interval && this.adaptive.sample(interval, timestamp)) {
+      this.resize();
+    }
 
     // Update atmosphere color crossfade (~0.67 s)
     if (this.transitionProgress < 1.0) {

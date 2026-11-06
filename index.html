@@ -346,6 +346,24 @@
       </div>
     </div>
 
+    <!-- First-launch safety notes (shown once) -->
+    <div id="onboarding" class="onboarding hidden" role="dialog" aria-modal="true" aria-labelledby="onboarding-title">
+      <div class="onboarding-card">
+        <h2 id="onboarding-title" class="onboarding-title" data-i18n="onboarding.title">Before you begin</h2>
+        <ul class="onboarding-list">
+          <li data-i18n="onboarding.gentle"></li>
+          <li data-i18n="onboarding.stop"></li>
+          <li data-i18n="onboarding.holds"></li>
+          <li data-i18n="onboarding.notMedical"></li>
+        </ul>
+        <label class="settings-toggle">
+          <input id="onboarding-short-holds" type="checkbox" checked />
+          <span class="settings-label" data-i18n="onboarding.shortHolds"></span>
+        </label>
+        <button id="onboarding-accept" class="btn-restore-harmony onboarding-accept" data-i18n="onboarding.accept">I understand</button>
+      </div>
+    </div>
+
     <!-- App Entrypoint -->
     <script type="module" src="/src/main.ts"></script>
   </body>

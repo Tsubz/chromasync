@@ -12,6 +12,7 @@ import { AccessibilityManager } from './ui/Accessibility';
 import { UIController } from './ui/UIController';
 import { KeyboardShortcuts } from './ui/KeyboardShortcuts';
 import { StudioRecorder } from './ui/StudioRecorder';
+import { showOnboardingIfNeeded } from './ui/Onboarding';
 import { App } from '@capacitor/app';
 import { Capacitor } from '@capacitor/core';
 import { applyStaticTranslations, getLocale, setLocale, t } from './i18n';
@@ -138,6 +139,8 @@ class ChromasyncApp {
     });
 
     this.initEvents();
+    // Safety notes before the very first session; the dialog blocks taps and shortcuts meanwhile
+    showOnboardingIfNeeded(() => this.a11y.announceMessage(t('ui.beginHint')));
     this.registerServiceWorker();
     this.startLoop();
   }

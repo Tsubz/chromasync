@@ -103,8 +103,36 @@ try {
     subtext: document.getElementById('phase-subtext')?.textContent ?? ''
   }));
 
+  // --- First launch: safety notes come before anything else ---
+  const firstCtx = await browser.newContext({ viewport: { width: 390, height: 844 }, locale: 'fr-FR' });
+  const firstPage = await firstCtx.newPage();
+  await firstPage.goto(BASE_URL, { waitUntil: 'networkidle' });
+  check('Safety notes are shown on first launch', await firstPage.isVisible('#onboarding'));
+  await firstPage.mouse.click(30, 820); // backdrop
+  await firstPage.waitForTimeout(400);
+  check('Tapping around the safety notes neither closes them nor starts a session',
+    await firstPage.isVisible('#onboarding') && (await phaseText(firstPage)).label === 'Respirez avec la lumière');
+  // Focus starts on the accept button: Space activates it, like any focused button
+  await firstPage.keyboard.press('Space');
+  await firstPage.waitForTimeout(400);
+  check('Space accepts the notes without starting a session behind them',
+    !(await firstPage.isVisible('#onboarding')) && (await phaseText(firstPage)).label === 'Respirez avec la lumière');
+  check('Shorter breath holds are enabled by default after the notes',
+    await firstPage.evaluate(() => (document.getElementById('gentle-holds')).checked));
+  await firstPage.reload({ waitUntil: 'networkidle' });
+  check('Safety notes are not shown again', !(await firstPage.isVisible('#onboarding')));
+  await firstCtx.close();
+
+  // Other contexts start as returning users (safety notes already acknowledged)
+  const markOnboarded = () => {
+    const key = 'chromasync:prefs:v1';
+    const prefs = JSON.parse(localStorage.getItem(key) || '{}');
+    if (!prefs.onboarded) localStorage.setItem(key, JSON.stringify({ ...prefs, onboarded: true }));
+  };
+
   // --- Phone viewport, French locale ---
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, locale: 'fr-FR' });
+  await ctx.addInitScript(markOnboarded);
   const page = await ctx.newPage();
   const errors = [];
   const externalRequests = [];
@@ -212,6 +240,7 @@ try {
 
   // --- English locale ---
   const enCtx = await browser.newContext({ locale: 'en-US' });
+  await enCtx.addInitScript(markOnboarded);
   const enPage = await enCtx.newPage();
   await enPage.goto(BASE_URL, { waitUntil: 'networkidle' });
   check('English locale is detected', (await phaseText(enPage)).label === 'Breathe with the light');
@@ -222,6 +251,7 @@ try {
 
   // --- Science pages: load cleanly and their launch buttons open the matching atmosphere ---
   const sciCtx = await browser.newContext({ locale: 'en-US' });
+  await sciCtx.addInitScript(markOnboarded);
   const sciPage = await sciCtx.newPage();
   const sciErrors = [];
   sciPage.on('pageerror', e => sciErrors.push(e.message));
@@ -252,8 +282,9 @@ try {
 
   // --- Fractal dimension of the rendered visuals (the "fractal fluency" claim, D in 1.3–1.5) ---
   const fdCtx = await browser.newContext({ viewport: { width: 1024, height: 1024 } });
+  await fdCtx.addInitScript(markOnboarded);
   const fdPage = await fdCtx.newPage();
-  await fdPage.goto(`${BASE_URL}?nograin`, { waitUntil: 'networkidle' });
+  await fdPage.goto(`${BASE_URL}?nograin&quality=full`, { waitUntil: 'networkidle' });
   await fdPage.addStyleTag({ content: '.hud-top, .hud-bottom, .breath-guide { display: none !important; }' });
   const atmosphereCount = await fdPage.locator('#atmosphere-swatches .atmosphere-btn').count();
   for (let i = 0; i < atmosphereCount; i++) {
