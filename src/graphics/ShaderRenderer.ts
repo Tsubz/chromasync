@@ -28,6 +28,7 @@ export class ShaderRenderer {
   private uGrainLoc: WebGLUniformLocation | null = null;
   // Anti-banding film grain; `?nograin` turns it off so tests can measure the pattern itself
   private lastRenderTime: number = 0;
+  private readonly reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   // Lowers the internal resolution on devices that cannot keep up (`?quality=full` disables it,
   // e.g. for the fractal-dimension measurement in the e2e test)
   private readonly adaptive: AdaptiveResolution | null =
@@ -234,7 +235,9 @@ export class ShaderRenderer {
   }
 
   public render(state: BreathState, timestamp: number): void {
-    const timeInSeconds = timestamp * 0.001;
+    // Reduced motion: the field drifts at a third of the speed (the breath expansion, which
+    // is the guidance itself, is unchanged)
+    const timeInSeconds = timestamp * 0.001 * (this.reducedMotion.matches ? 0.33 : 1);
     // Animations advance with real time, so they run at the same speed on 60/120 Hz screens
     // and when frames are skipped to save battery
     const interval = this.lastRenderTime ? timestamp - this.lastRenderTime : 0;

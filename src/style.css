@@ -120,6 +120,20 @@ body.sleep-dimmer-active .phase-indicator-ring {
   width: 100%;
 }
 
+/* Soft dark veil behind the text: the guide sits on the brightest part of the glow */
+.phase-display::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: min(560px, 110%);
+  height: 9rem;
+  transform: translate(-50%, -1.5rem);
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.32) 0%, rgba(0, 0, 0, 0.14) 45%, transparent 72%);
+  pointer-events: none;
+  z-index: -1;
+}
+
 .phase-label {
   font-family: var(--font-serif);
   font-weight: 400;
@@ -134,10 +148,12 @@ body.sleep-dimmer-active .phase-indicator-ring {
 
 .phase-subtext {
   font-size: clamp(0.85rem, 2vw, 1.125rem);
-  font-weight: 300;
-  color: var(--text-secondary);
+  font-weight: 400;
+  /* Sits on the brightest part of the visuals: brighter text and a tight dark halo keep it
+     readable over the light glow (it was only 65% white with a soft shadow) */
+  color: rgba(255, 255, 255, 0.88);
   letter-spacing: 0.04em;
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.45);
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.55), 0 1px 3px rgba(0, 0, 0, 0.5), 0 2px 14px rgba(0, 0, 0, 0.55);
   transition: opacity 0.5s ease;
   max-width: 90%;
 }

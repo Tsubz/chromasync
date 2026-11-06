@@ -86,6 +86,8 @@ export class UIController {
   private isDrawerOpen: boolean = false;
   private isTuningDrawerOpen: boolean = false;
   private hasStarted: boolean = false;
+  // Element focused before a drawer opened, focused again when it closes
+  private drawerOpener: HTMLElement | null = null;
 
   // When OLED mode was last toggled (ignores the click of the enabling double-tap)
   private oledToggledAt: number = 0;
@@ -570,17 +572,33 @@ export class UIController {
   }
 
   public openTuningDrawer(): void {
-    this.closeInfoDrawer();
+    this.closeInfoDrawer(false);
     this.isTuningDrawerOpen = true;
     this.updateHarmonyState();
-    this.tuningDrawer?.classList.remove('hidden');
-    this.tuningDrawer?.setAttribute('aria-hidden', 'false');
+    this.showDrawer(this.tuningDrawer, this.btnCloseTuningDrawer);
   }
 
-  public closeTuningDrawer(): void {
+  public closeTuningDrawer(restoreFocus = true): void {
+    if (!this.isTuningDrawerOpen) return;
     this.isTuningDrawerOpen = false;
-    this.tuningDrawer?.classList.add('hidden');
-    this.tuningDrawer?.setAttribute('aria-hidden', 'true');
+    this.hideDrawer(this.tuningDrawer, restoreFocus);
+  }
+
+  /** Moves keyboard / screen-reader focus into a drawer, remembering where it came from. */
+  private showDrawer(drawer: HTMLElement | null, focusTarget: HTMLElement | null): void {
+    if (!this.drawerOpener) this.drawerOpener = document.activeElement as HTMLElement | null;
+    drawer?.classList.remove('hidden');
+    drawer?.setAttribute('aria-hidden', 'false');
+    focusTarget?.focus();
+  }
+
+  private hideDrawer(drawer: HTMLElement | null, restoreFocus: boolean): void {
+    drawer?.classList.add('hidden');
+    drawer?.setAttribute('aria-hidden', 'true');
+    if (restoreFocus) {
+      this.drawerOpener?.focus?.();
+      this.drawerOpener = null;
+    }
   }
 
   public toggleOledMode(): boolean {
@@ -612,18 +630,17 @@ export class UIController {
   }
 
   public openInfoDrawer(): void {
-    this.closeTuningDrawer();
+    this.closeTuningDrawer(false);
     this.isDrawerOpen = true;
     this.updateInfoDrawer();
     this.updateHarmonyState();
-    this.infoDrawer?.classList.remove('hidden');
-    this.infoDrawer?.setAttribute('aria-hidden', 'false');
+    this.showDrawer(this.infoDrawer, this.btnCloseDrawer);
   }
 
-  public closeInfoDrawer(): void {
+  public closeInfoDrawer(restoreFocus = true): void {
+    if (!this.isDrawerOpen) return;
     this.isDrawerOpen = false;
-    this.infoDrawer?.classList.add('hidden');
-    this.infoDrawer?.setAttribute('aria-hidden', 'true');
+    this.hideDrawer(this.infoDrawer, restoreFocus);
   }
 
   public updateInfoDrawer(atmosphere?: Atmosphere, pattern?: BreathingPattern): void {

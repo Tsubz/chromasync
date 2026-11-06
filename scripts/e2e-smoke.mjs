@@ -182,6 +182,18 @@ try {
   check('Info drawer shows the medical disclaimer', await page.isVisible('.drawer-disclaimer'));
   await page.keyboard.press('Escape');
 
+  // Accessibility: drawers take focus and give it back; phase announcements stay short
+  await page.focus('#btn-tuning');
+  await page.keyboard.press('Enter');
+  await page.waitForTimeout(300);
+  const focusInDrawer = await page.evaluate(() => document.activeElement?.id);
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(200);
+  const focusBack = await page.evaluate(() => document.activeElement?.id);
+  check('Drawers move focus inside and give it back on close', focusInDrawer === 'btn-close-tuning-drawer' && focusBack === 'btn-tuning', `${focusInDrawer} → ${focusBack}`);
+  const announcement = await page.evaluate(() => document.getElementById('a11y-announcer')?.textContent ?? '');
+  check('Screen-reader announcements stay short', announcement.length > 0 && announcement.length < 60, announcement);
+
   // Rhythm settings: the resonance slider renames the pill and survives a reload
   await page.click('#btn-info');
   await page.waitForTimeout(300);
@@ -247,6 +259,9 @@ try {
   await enPage.keyboard.press('Space');
   await enPage.waitForTimeout(800);
   check('Space starts the session on first press', (await phaseText(enPage)).label !== 'Paused');
+  await enPage.emulateMedia({ reducedMotion: 'reduce' });
+  await enPage.waitForTimeout(500);
+  check('Reduced-motion mode keeps the session running', (await phaseText(enPage)).label !== 'Paused');
   await enCtx.close();
 
   // --- Science pages: load cleanly and their launch buttons open the matching atmosphere ---
