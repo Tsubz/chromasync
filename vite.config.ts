@@ -43,8 +43,7 @@ export default defineConfig({
     open: false
   },
   build: {
-    target: 'esnext',
-    minify: 'esbuild'
+    target: 'esnext'
   },
   test: {
     environment: 'jsdom'

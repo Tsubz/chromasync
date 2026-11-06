@@ -15,11 +15,11 @@
     "test:e2e": "node scripts/e2e-smoke.mjs"
   },
   "devDependencies": {
-    "jsdom": "^25.0.1",
+    "jsdom": "^31.0.0",
     "playwright": "1.63.0",
     "typescript": "^5.4.5",
-    "vite": "^5.2.11",
-    "vitest": "^3.2.7"
+    "vite": "^8.3.6",
+    "vitest": "^5.1.0"
   },
   "dependencies": {
     "@capacitor/android": "^8.5.1",
