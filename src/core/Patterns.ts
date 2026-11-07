@@ -17,7 +17,6 @@ export interface BreathingPattern {
   description: string;
   tagline: string;
   scientificSource: string;
-  recommendedAtmosphereId: string;
   phases: BreathPhase[];
 }
 
@@ -30,7 +29,6 @@ interface PhaseDefinition {
 interface PatternDefinition {
   id: string;
   scientificSource: string;
-  recommendedAtmosphereId: string;
   phases: PhaseDefinition[];
 }
 
@@ -62,7 +60,6 @@ function definePattern(def: PatternDefinition): BreathingPattern {
   return {
     id: def.id,
     scientificSource: def.scientificSource,
-    recommendedAtmosphereId: def.recommendedAtmosphereId,
     get name() { return text('name'); },
     get shortName() { return text('shortName'); },
     get tagline() { return text('tagline'); },
@@ -80,7 +77,6 @@ export const BREATHING_PATTERNS: BreathingPattern[] = [
   definePattern({
     id: 'sigh_huberman',
     scientificSource: 'Balban et al., Cell Reports Medicine 2023 (cyclic sighing, randomized trial)',
-    recommendedAtmosphereId: 'astral',
     phases: [
       { type: 'inhale', duration: 3.0 },
       // Second nasal "top-up" is an inhale, not a hold
@@ -91,7 +87,6 @@ export const BREATHING_PATTERNS: BreathingPattern[] = [
   definePattern({
     id: 'coherence_55',
     scientificSource: 'Lehrer & Gevirtz, Front. Psychol. 2014 · Lehrer et al., Appl. Psychophysiol. Biofeedback 2020 (meta-analysis)',
-    recommendedAtmosphereId: 'aurora',
     phases: [
       { type: 'inhale', duration: () => BreathSettings.resonanceHalfCycle },
       { type: 'exhale', duration: () => BreathSettings.resonanceHalfCycle }
@@ -100,7 +95,6 @@ export const BREATHING_PATTERNS: BreathingPattern[] = [
   definePattern({
     id: 'box_4444',
     scientificSource: 'Balban et al., Cell Reports Medicine 2023 (box breathing arm)',
-    recommendedAtmosphereId: 'ocean',
     phases: [
       { type: 'inhale', duration: 4 },
       { type: 'hold_in', duration: 4 },
@@ -111,7 +105,6 @@ export const BREATHING_PATTERNS: BreathingPattern[] = [
   definePattern({
     id: 'relax_478',
     scientificSource: 'Popularized by Dr. Andrew Weil · small trial: Vierra et al., Physiol. Rep. 2022',
-    recommendedAtmosphereId: 'hearth',
     phases: [
       { type: 'inhale', duration: 4 },
       { type: 'hold_in', duration: 7 },
@@ -121,7 +114,6 @@ export const BREATHING_PATTERNS: BreathingPattern[] = [
   definePattern({
     id: 'sleep_426',
     scientificSource: 'Respiratory vagal stimulation model (Gerritsen & Band, Front. Hum. Neurosci. 2018)',
-    recommendedAtmosphereId: 'rain',
     phases: [
       { type: 'inhale', duration: 4 },
       { type: 'hold_in', duration: 2 },
@@ -131,7 +123,6 @@ export const BREATHING_PATTERNS: BreathingPattern[] = [
   definePattern({
     id: 'free_flow',
     scientificSource: 'Interoception (Critchley & Harrison, Neuron 2013)',
-    recommendedAtmosphereId: 'aurora',
     phases: [
       { type: 'inhale', duration: 4.5 },
       { type: 'exhale', duration: 5.5 }

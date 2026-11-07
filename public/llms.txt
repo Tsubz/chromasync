@@ -19,16 +19,18 @@
 
 ## Visuals and Sound
 - **Fractal visuals:** domain-warped fractional Brownian motion, calibrated so the rendered contours measure a box-counting fractal dimension D ≈ 1.4, inside the 1.3–1.5 range Richard Taylor's research links to visual fluency and lower stress. Checked automatically in CI.
-- **Tuning:** the ambient chord can use A = 432 Hz, 440 Hz or 528 Hz as reference pitch. Studies favouring 432 Hz or 528 Hz are small pilots; this is offered as a matter of taste.
-- **Binaural beats (headphones):** 4, 5.5 or 10 Hz beats with strict left/right separation. Evidence for brainwave entrainment is mixed (Ingendoh et al., 2023).
+- **Tuning:** the ambient chord uses A = 432 Hz (default) or 440 Hz as reference pitch, a matter of taste; studies favouring 432 Hz are small pilots. 528 Hz "Solfeggio" is deliberately not offered (no scientific basis).
+- **Binaural beats (headphones, off by default):** opt-in 4, 5.5 or 10 Hz beats with strict left/right separation. Evidence for brainwave entrainment is mixed (Ingendoh et al., 2023), and on a phone speaker they only wobble.
 - **Warm Hearth atmosphere:** amber palette emitting under 1% of a white screen's blue light, for evening use.
 
 ## The 5 Atmospheres
-- **Celestial Aurora:** Resonance Breathing, 432 Hz, 5.5 Hz beat, watercolor fBm fluid.
-- **Oceanic Tide:** Box Breathing, 528 Hz, 10 Hz beat, liquid caustics.
-- **Forest Rain:** Deep Unwind (4-2-6), 432 Hz, 5.5 Hz beat, rain ripples.
-- **Warm Hearth:** 4-7-8 Relax, 432 Hz, 4 Hz beat, rising embers, low blue light.
-- **Astral Void:** Physiological Sigh, 528 Hz, 5.5 Hz beat, nebula and stars.
+Each atmosphere suggests a rhythm, but any atmosphere can be combined with any rhythm.
+
+- **Celestial Aurora:** suggests Resonance Breathing; watercolor fBm fluid.
+- **Oceanic Tide:** suggests Box Breathing; liquid caustics, sea swell.
+- **Forest Rain:** suggests Deep Unwind (4-2-6); rain ripples.
+- **Warm Hearth:** suggests 4-7-8 Relax; rising embers, low blue light.
+- **Astral Void:** suggests the Physiological Sigh; nebula and stars.
 
 ## Privacy
 No data collected: https://chromasync-app.web.app/privacy

@@ -6,6 +6,10 @@ export interface PreferenceValues {
   muted: boolean;
   resonanceBpm: number;
   gentleHolds: boolean;
+  onboarded: boolean;
+  tuning: number;
+  binauralEnabled: boolean;
+  binauralBeat: number;
 }
 
 const STORAGE_KEY = 'chromasync:prefs:v1';

@@ -13,7 +13,7 @@
     <link rel="apple-touch-icon" href="/icon.svg" />
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: https:; connect-src 'self'; media-src 'none'; object-src 'none'; base-uri 'self';" />
     
-    <meta name="keywords" content="breathing exercise, box breathing, 4-7-8 breathing, vagus nerve stimulation, hrv resonance, baroreflex coherence, binaural beats, 432hz, 528hz, webgl shader, ambient sound generator, meditation app, pwa, zero bloat" />
+    <meta name="keywords" content="breathing exercise, box breathing, 4-7-8 breathing, vagus nerve stimulation, hrv resonance, baroreflex coherence, binaural beats, 432hz, webgl shader, ambient sound generator, meditation app, pwa, zero bloat" />
     <meta name="author" content="Chromasync" />
     <link rel="canonical" href="https://chromasync-app.web.app/" />
     <link rel="alternate" type="application/rss+xml" title="Chromasync Feed" href="https://chromasync-app.web.app/feed.xml" />
@@ -60,7 +60,7 @@
             "Pure Procedural WebGL GLSL Fluid & Particle Shaders",
             "Real-time DSP Web Audio Soundscapes (Zero Audio Files)",
             "Binaural Beats Entrainment (Theta 4.0Hz/5.5Hz, Alpha 10.0Hz)",
-            "Acoustic Carrier Tuning (Verdi 432Hz, Solfeggio 528Hz, Standard 440Hz)",
+            "Ambient chord tuned to 432 Hz or 440 Hz, optional binaural beats",
             "Tactile Haptic Guidance for Eyes-Closed Meditation",
             "OLED Pure Black Mode for Sensory Deprivation",
             "Progressive Web App (PWA) with 100% Offline Capability"
@@ -120,10 +120,10 @@
 
       <div class="top-actions">
         <!-- Smart Frequency & Harmony Badge (Visible on desktop & mobile) -->
-        <button id="btn-tuning" class="tuning-badge-btn is-harmonized" aria-label="Frequency harmony" title="Frequency harmony (T)" data-i18n-aria-label="tuning.title">
+        <button id="btn-tuning" class="tuning-badge-btn" aria-label="Sound settings" title="Sound settings (T)" data-i18n-aria-label="header.tuning">
           <span class="tuning-icon">✨</span>
           <span id="tuning-text">432 Hz</span>
-          <span id="tuning-status-tag" class="tuning-status-tag"></span>
+          <span id="tuning-status-tag" class="tuning-status-tag hidden"></span>
         </button>
 
         <button id="btn-oled" class="icon-btn" aria-label="Eyes-closed mode" title="Eyes-closed mode / pure black (O)" data-i18n-aria-label="header.oled" data-i18n-title="header.oled">
@@ -223,7 +223,7 @@
     </nav>
 
     <!-- Minimalist Scientific Info Drawer (Bottom Sheet) -->
-    <div id="info-drawer" class="info-drawer hidden" aria-hidden="true" role="dialog" aria-labelledby="drawer-title">
+    <div id="info-drawer" class="info-drawer hidden" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
       <div class="drawer-backdrop" id="drawer-backdrop"></div>
       <div class="drawer-content">
         <div class="drawer-handle"></div>
@@ -275,45 +275,27 @@
     </div>
 
     <!-- Dedicated Frequency & Harmony Drawer (Bottom Sheet) -->
-    <div id="tuning-drawer" class="info-drawer hidden" aria-hidden="true" role="dialog" aria-labelledby="tuning-drawer-title">
+    <div id="tuning-drawer" class="info-drawer hidden" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="tuning-drawer-title">
       <div class="drawer-backdrop" id="tuning-drawer-backdrop"></div>
       <div class="drawer-content">
         <div class="drawer-handle"></div>
         <div class="drawer-header">
-          <h2 id="tuning-drawer-title" class="drawer-title" data-i18n="tuning.title">Frequency harmony</h2>
+          <h2 id="tuning-drawer-title" class="drawer-title" data-i18n="tuning.title">Sound</h2>
           <button id="btn-close-tuning-drawer" class="drawer-close-btn" aria-label="Close (Esc)" data-i18n-aria-label="drawer.close">✕</button>
         </div>
         <div class="drawer-body">
-          <!-- Harmony Status & Fast Reset Banner -->
-          <div id="harmony-status-banner" class="harmony-status-banner is-harmonized">
-            <div class="status-indicator">
-              <span class="status-pulse-dot"></span>
-              <span id="harmony-status-text"></span>
-            </div>
-            <button id="btn-restore-harmony" class="btn-restore-harmony-action hidden"></button>
-          </div>
-
-          <!-- Carrier Frequencies -->
+          <!-- Reference pitch -->
           <div class="drawer-section">
-            <span class="drawer-section-label" data-i18n="tuning.carrier">Carrier frequency</span>
+            <span class="drawer-section-label" data-i18n="tuning.carrier">Tuning</span>
             <div class="frequency-cards" id="frequency-cards">
-              <button class="freq-card active" data-freq="432">
+              <button class="freq-card" data-freq="432" aria-pressed="false">
                 <div class="freq-card-header">
                   <span class="freq-hz">432 Hz</span>
                   <span class="freq-tag" data-i18n="tuning.432.tag"></span>
                 </div>
                 <p class="freq-desc" data-i18n="tuning.432.desc"></p>
-                <span class="freq-rec-tag" data-rec="432" data-i18n="tuning.recommended"></span>
               </button>
-              <button class="freq-card" data-freq="528">
-                <div class="freq-card-header">
-                  <span class="freq-hz">528 Hz</span>
-                  <span class="freq-tag" data-i18n="tuning.528.tag"></span>
-                </div>
-                <p class="freq-desc" data-i18n="tuning.528.desc"></p>
-                <span class="freq-rec-tag" data-rec="528" data-i18n="tuning.recommended"></span>
-              </button>
-              <button class="freq-card" data-freq="440">
+              <button class="freq-card" data-freq="440" aria-pressed="false">
                 <div class="freq-card-header">
                   <span class="freq-hz">440 Hz</span>
                   <span class="freq-tag" data-i18n="tuning.440.tag"></span>
@@ -323,26 +305,48 @@
             </div>
           </div>
 
-          <!-- Binaural Entrainment Waves -->
+          <!-- Binaural beats: opt-in, headphones only -->
           <div class="drawer-section">
-            <span class="drawer-section-label" data-i18n="tuning.binaural">Binaural beats (headphones)</span>
+            <span class="drawer-section-label" data-i18n="tuning.binaural">Binaural beats</span>
+            <label class="settings-toggle">
+              <input id="binaural-toggle" type="checkbox" />
+              <span class="settings-label" data-i18n="tuning.binauralToggle">Play binaural beats (headphones only)</span>
+            </label>
             <div class="binaural-pills" id="binaural-pills">
-              <button class="binaural-pill active" data-beat="5.5">
+              <button class="binaural-pill" data-beat="4" aria-pressed="false">
+                <span class="beat-name">Theta 4 Hz</span>
+                <span class="beat-effect" data-i18n="tuning.beat4"></span>
+              </button>
+              <button class="binaural-pill" data-beat="5.5" aria-pressed="false">
                 <span class="beat-name">Theta 5.5 Hz</span>
                 <span class="beat-effect" data-i18n="tuning.beat55"></span>
               </button>
-              <button class="binaural-pill" data-beat="10.0">
-                <span class="beat-name">Alpha 10.0 Hz</span>
+              <button class="binaural-pill" data-beat="10" aria-pressed="false">
+                <span class="beat-name">Alpha 10 Hz</span>
                 <span class="beat-effect" data-i18n="tuning.beat10"></span>
-              </button>
-              <button class="binaural-pill" data-beat="4.0">
-                <span class="beat-name">Theta 4.0 Hz</span>
-                <span class="beat-effect" data-i18n="tuning.beat4"></span>
               </button>
             </div>
             <p class="drawer-disclaimer" data-i18n="tuning.evidence"></p>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- First-launch safety notes (shown once) -->
+    <div id="onboarding" class="onboarding hidden" role="dialog" aria-modal="true" aria-labelledby="onboarding-title">
+      <div class="onboarding-card">
+        <h2 id="onboarding-title" class="onboarding-title" data-i18n="onboarding.title">Before you begin</h2>
+        <ul class="onboarding-list">
+          <li data-i18n="onboarding.gentle"></li>
+          <li data-i18n="onboarding.stop"></li>
+          <li data-i18n="onboarding.holds"></li>
+          <li data-i18n="onboarding.notMedical"></li>
+        </ul>
+        <label class="settings-toggle">
+          <input id="onboarding-short-holds" type="checkbox" checked />
+          <span class="settings-label" data-i18n="onboarding.shortHolds"></span>
+        </label>
+        <button id="onboarding-accept" class="btn-restore-harmony onboarding-accept" data-i18n="onboarding.accept">I understand</button>
       </div>
     </div>
 

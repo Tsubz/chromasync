@@ -3,6 +3,7 @@ import { ATMOSPHERES, Atmosphere } from '../core/Atmospheres';
 import { BreathState } from '../core/BreathingEngine';
 import { SessionDurationMinutes, TimerState } from '../core/SessionTimer';
 import { TuningFrequency } from '../audio/SynthChord';
+import { BinauralBeat, SoundSettings } from '../core/SoundSettings';
 import { t } from '../i18n';
 import { CanvasGestures } from './CanvasGestures';
 import { enableSwipeToDismiss } from './DrawerSwipe';
@@ -16,8 +17,6 @@ export interface UIControllerCallbacks {
   onAtmosphereSelect: (atmosphere: Atmosphere) => void;
   onTimerSelect: (minutes: SessionDurationMinutes) => void;
   onToggleTuning: () => void;
-  onTuningSelect?: (tuning: TuningFrequency, binauralBeat?: number) => void;
-  onRestoreHarmony?: (atmosphere: Atmosphere) => void;
   onUserInteraction: () => void;
   onTouchPaceStart?: () => void;
   onTouchPaceEnd?: () => void;
@@ -29,8 +28,6 @@ export class UIController {
   private callbacks: UIControllerCallbacks;
   private currentAtmosphereId: string;
   private currentPatternId: string;
-  private currentTuning: TuningFrequency = 432;
-  private currentBinauralBeat: number = 5.5;
   private currentDuration: SessionDurationMinutes = 0;
 
   // DOM Elements
@@ -47,7 +44,7 @@ export class UIController {
   private timerPillsContainer: HTMLElement | null;
   private btnTuning: HTMLButtonElement | null;
   private tuningText: HTMLElement | null;
-  private tuningStatusTag: HTMLElement | null;
+  private binauralTag: HTMLElement | null;
   private btnOled: HTMLButtonElement | null;
   private btnInfo: HTMLButtonElement | null;
 
@@ -65,13 +62,11 @@ export class UIController {
   private infoPatternSource: HTMLElement | null;
   private btnInfoRestore: HTMLButtonElement | null;
 
-  // Dedicated Frequency & Harmony Drawer elements
+  // Sound drawer elements
   private tuningDrawer: HTMLElement | null;
   private tuningDrawerBackdrop: HTMLElement | null;
   private btnCloseTuningDrawer: HTMLButtonElement | null;
-  private harmonyStatusBanner: HTMLElement | null;
-  private harmonyStatusText: HTMLElement | null;
-  private btnRestoreHarmony: HTMLButtonElement | null;
+  private binauralToggle: HTMLInputElement | null;
   private frequencyCardsContainer: HTMLElement | null;
   private binauralPillsContainer: HTMLElement | null;
 
@@ -86,6 +81,8 @@ export class UIController {
   private isDrawerOpen: boolean = false;
   private isTuningDrawerOpen: boolean = false;
   private hasStarted: boolean = false;
+  // Element focused before a drawer opened, focused again when it closes
+  private drawerOpener: HTMLElement | null = null;
 
   // When OLED mode was last toggled (ignores the click of the enabling double-tap)
   private oledToggledAt: number = 0;
@@ -94,8 +91,6 @@ export class UIController {
     this.callbacks = callbacks;
     this.currentPatternId = initialPattern.id;
     this.currentAtmosphereId = initialAtmosphere.id;
-    this.currentTuning = initialAtmosphere.recommendedTuning;
-    this.currentBinauralBeat = initialAtmosphere.recommendedBinauralBeat;
 
     this.phaseLabel = document.getElementById('phase-label');
     this.phaseSubtext = document.getElementById('phase-subtext');
@@ -110,7 +105,7 @@ export class UIController {
     this.timerPillsContainer = document.getElementById('timer-pills');
     this.btnTuning = document.getElementById('btn-tuning') as HTMLButtonElement | null;
     this.tuningText = document.getElementById('tuning-text');
-    this.tuningStatusTag = document.getElementById('tuning-status-tag');
+    this.binauralTag = document.getElementById('tuning-status-tag');
     this.btnOled = document.getElementById('btn-oled') as HTMLButtonElement | null;
     this.btnInfo = document.getElementById('btn-info') as HTMLButtonElement | null;
 
@@ -128,13 +123,11 @@ export class UIController {
     this.infoPatternSource = document.getElementById('info-pattern-source');
     this.btnInfoRestore = document.getElementById('btn-info-restore') as HTMLButtonElement | null;
 
-    // Tuning & Harmony Drawer
+    // Sound drawer
     this.tuningDrawer = document.getElementById('tuning-drawer');
     this.tuningDrawerBackdrop = document.getElementById('tuning-drawer-backdrop');
     this.btnCloseTuningDrawer = document.getElementById('btn-close-tuning-drawer') as HTMLButtonElement | null;
-    this.harmonyStatusBanner = document.getElementById('harmony-status-banner');
-    this.harmonyStatusText = document.getElementById('harmony-status-text');
-    this.btnRestoreHarmony = document.getElementById('btn-restore-harmony') as HTMLButtonElement | null;
+    this.binauralToggle = document.getElementById('binaural-toggle') as HTMLInputElement | null;
     this.frequencyCardsContainer = document.getElementById('frequency-cards');
     this.binauralPillsContainer = document.getElementById('binaural-pills');
 
@@ -147,9 +140,9 @@ export class UIController {
     enableSwipeToDismiss(this.infoDrawer, () => this.closeInfoDrawer());
     enableSwipeToDismiss(this.tuningDrawer, () => this.closeTuningDrawer());
     this.resetIdleTimer();
-    this.updateTuningBadge(initialAtmosphere.recommendedTuning, initialAtmosphere.binauralLabel);
+    this.renderSound();
+    this.updatePillsSelection();
     this.updateInfoDrawer(initialAtmosphere, initialPattern);
-    this.updateHarmonyState();
   }
 
   private initPills(): void {
@@ -175,13 +168,7 @@ export class UIController {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
         this.callbacks.onUserInteraction();
-        this.currentPatternId = pattern.id;
-        this.isSessionComplete = false;
-        this.toastMessage = null;
-        this.updatePillsSelection();
-        this.updateInfoDrawer();
-        this.updateHarmonyState();
-        this.callbacks.onPatternSelect(pattern.id);
+        this.selectPattern(pattern.id);
       });
 
       this.patternPillsContainer?.appendChild(btn);
@@ -216,14 +203,57 @@ export class UIController {
     render();
   }
 
+  /** Rhythm and atmosphere are independent; the atmosphere only *suggests* a rhythm. */
+  private selectPattern(patternId: string): void {
+    this.currentPatternId = patternId;
+    this.isSessionComplete = false;
+    this.toastMessage = null;
+    this.updatePillsSelection();
+    this.updateInfoDrawer();
+    this.callbacks.onPatternSelect(patternId);
+  }
+
+  private selectAtmosphere(atmosphere: Atmosphere): void {
+    this.currentAtmosphereId = atmosphere.id;
+    this.updateAtmosphereSelection();
+    this.updatePillsSelection();
+    this.updateInfoDrawer(atmosphere);
+    this.callbacks.onAtmosphereSelect(atmosphere);
+
+    // Name the atmosphere and, if the current rhythm differs, its suggested one
+    const suggested = BREATHING_PATTERNS.find(p => p.id === atmosphere.suggestedPatternId);
+    this.showToast(suggested && suggested.id !== this.currentPatternId
+      ? t('pairing.toast', { icon: atmosphere.icon, atmosphere: atmosphere.name, pattern: suggested.shortName })
+      : `${atmosphere.icon} ${atmosphere.name}`, 3200);
+  }
+
+  private showToast(message: string, durationMs: number): void {
+    this.toastMessage = message;
+    if (this.toastTimer) clearTimeout(this.toastTimer);
+    this.toastTimer = window.setTimeout(() => {
+      this.toastMessage = null;
+    }, durationMs);
+  }
+
   private updatePillsSelection(): void {
     if (!this.patternPillsContainer) return;
+    const atmosphere = ATMOSPHERES.find(a => a.id === this.currentAtmosphereId);
     const buttons = this.patternPillsContainer.querySelectorAll('.pill-btn');
     buttons.forEach((btn, idx) => {
       const pattern = BREATHING_PATTERNS[idx];
       const isActive = pattern.id === this.currentPatternId;
+      const isSuggested = pattern.id === atmosphere?.suggestedPatternId;
       btn.classList.toggle('active', isActive);
       btn.setAttribute('aria-checked', isActive ? 'true' : 'false');
+      // The rhythm bar scrolls horizontally on phones: keep the active rhythm in view
+      if (isActive) (btn as HTMLElement).scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
+      // A small dot marks the rhythm suggested for the current atmosphere
+      btn.classList.toggle('is-suggested', isSuggested);
+      if (isSuggested && atmosphere) {
+        btn.setAttribute('aria-description', t('pairing.suggestedFor', { atmosphere: atmosphere.name }));
+      } else {
+        btn.removeAttribute('aria-description');
+      }
     });
   }
 
@@ -234,7 +264,7 @@ export class UIController {
     ATMOSPHERES.forEach(atmosphere => {
       const btn = document.createElement('button');
       btn.className = `atmosphere-btn ${atmosphere.id === this.currentAtmosphereId ? 'active' : ''}`;
-      btn.title = `${atmosphere.name} — ${atmosphere.scientificTarget}`;
+      btn.title = `${atmosphere.name} — ${atmosphere.tagline}`;
       btn.setAttribute('role', 'radio');
       btn.setAttribute('aria-label', t('ui.atmosphereAria', { name: atmosphere.name }));
       const iconSpan = document.createElement('span');
@@ -254,13 +284,7 @@ export class UIController {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
         this.callbacks.onUserInteraction();
-        this.currentAtmosphereId = atmosphere.id;
-        this.currentTuning = atmosphere.recommendedTuning;
-        this.currentBinauralBeat = atmosphere.recommendedBinauralBeat;
-        this.updateAtmosphereSelection();
-        this.updateInfoDrawer(atmosphere);
-        this.updateHarmonyState();
-        this.callbacks.onAtmosphereSelect(atmosphere);
+        this.selectAtmosphere(atmosphere);
       });
 
       this.atmosphereSwatchesContainer?.appendChild(btn);
@@ -295,60 +319,65 @@ export class UIController {
     });
   }
 
+  /** Sound drawer: reference pitch and (opt-in) binaural beats, stored in SoundSettings. */
   private initTuningDrawer(): void {
-    // Frequency cards selection
-    const freqCards = this.frequencyCardsContainer?.querySelectorAll<HTMLButtonElement>('.freq-card');
-    freqCards?.forEach(card => {
+    this.frequencyCardsContainer?.querySelectorAll<HTMLButtonElement>('.freq-card').forEach(card => {
       card.addEventListener('click', (e) => {
         e.stopPropagation();
         this.callbacks.onUserInteraction();
-        const freq = parseInt(card.dataset.freq || '432', 10) as TuningFrequency;
-        this.currentTuning = freq;
-        this.updateTuningDrawerSelection();
-        this.updateHarmonyState();
-        this.callbacks.onTuningSelect?.(freq, this.currentBinauralBeat);
+        SoundSettings.tuning = parseInt(card.dataset.freq || '432', 10) as TuningFrequency;
       });
     });
 
-    // Binaural pills selection
-    const beatPills = this.binauralPillsContainer?.querySelectorAll<HTMLButtonElement>('.binaural-pill');
-    beatPills?.forEach(pill => {
+    this.binauralToggle?.addEventListener('change', () => {
+      this.callbacks.onUserInteraction();
+      SoundSettings.binauralEnabled = this.binauralToggle?.checked ?? false;
+    });
+
+    this.binauralPillsContainer?.querySelectorAll<HTMLButtonElement>('.binaural-pill').forEach(pill => {
       pill.addEventListener('click', (e) => {
         e.stopPropagation();
         this.callbacks.onUserInteraction();
-        const beat = parseFloat(pill.dataset.beat || '5.5');
-        this.currentBinauralBeat = beat;
-        this.updateTuningDrawerSelection();
-        this.updateHarmonyState();
-        this.callbacks.onTuningSelect?.(this.currentTuning, beat);
+        SoundSettings.binauralBeat = parseFloat(pill.dataset.beat || '5.5') as BinauralBeat;
+        SoundSettings.binauralEnabled = true;
       });
     });
 
-    // One-tap restore buttons
-    const handleRestore = (e: MouseEvent) => {
+    // "Use the suggested rhythm" in the info drawer
+    this.btnInfoRestore?.addEventListener('click', (e) => {
       e.stopPropagation();
       this.callbacks.onUserInteraction();
-      this.restoreOptimalHarmony();
-    };
+      const atmosphere = ATMOSPHERES.find(a => a.id === this.currentAtmosphereId);
+      if (atmosphere) this.selectPattern(atmosphere.suggestedPatternId);
+    });
 
-    this.btnRestoreHarmony?.addEventListener('click', handleRestore);
-    this.btnInfoRestore?.addEventListener('click', handleRestore);
+    SoundSettings.onChange(() => this.renderSound());
   }
 
-  private updateTuningDrawerSelection(): void {
-    // Frequency cards
-    const freqCards = this.frequencyCardsContainer?.querySelectorAll<HTMLButtonElement>('.freq-card');
-    freqCards?.forEach(card => {
-      const freq = parseInt(card.dataset.freq || '432', 10);
-      card.classList.toggle('active', freq === this.currentTuning);
+  private renderSound(): void {
+    const { tuning, binauralEnabled, binauralBeat } = SoundSettings;
+
+    this.frequencyCardsContainer?.querySelectorAll<HTMLButtonElement>('.freq-card').forEach(card => {
+      const isActive = parseInt(card.dataset.freq || '0', 10) === tuning;
+      card.classList.toggle('active', isActive);
+      card.setAttribute('aria-pressed', String(isActive));
     });
 
-    // Binaural pills
-    const beatPills = this.binauralPillsContainer?.querySelectorAll<HTMLButtonElement>('.binaural-pill');
-    beatPills?.forEach(pill => {
-      const beat = parseFloat(pill.dataset.beat || '5.5');
-      pill.classList.toggle('active', Math.abs(beat - this.currentBinauralBeat) < 0.1);
+    if (this.binauralToggle) this.binauralToggle.checked = binauralEnabled;
+    this.binauralPillsContainer?.classList.toggle('is-off', !binauralEnabled);
+    this.binauralPillsContainer?.querySelectorAll<HTMLButtonElement>('.binaural-pill').forEach(pill => {
+      const isActive = binauralEnabled && Math.abs(parseFloat(pill.dataset.beat || '0') - binauralBeat) < 0.1;
+      pill.classList.toggle('active', isActive);
+      pill.setAttribute('aria-pressed', String(isActive));
     });
+
+    // Header badge: tuning, plus a headphones tag while binaural beats are on
+    if (this.tuningText) this.tuningText.textContent = `${tuning} Hz`;
+    if (this.binauralTag) {
+      this.binauralTag.textContent = binauralEnabled ? `🎧 ${binauralBeat} Hz` : '';
+      this.binauralTag.classList.toggle('hidden', !binauralEnabled);
+    }
+    if (this.btnTuning) this.btnTuning.title = t('sound.badgeTitle', { hz: tuning });
   }
 
   private initEventListeners(): void {
@@ -359,7 +388,7 @@ export class UIController {
       this.callbacks.onToggleSound();
     });
 
-    // Tuning button opens dedicated Harmony Drawer
+    // Tuning badge opens the sound drawer
     this.btnTuning?.addEventListener('click', (e) => {
       e.stopPropagation();
       this.callbacks.onUserInteraction();
@@ -385,11 +414,7 @@ export class UIController {
       this.callbacks.onTimerSelect(nextDuration);
 
       const label = nextDuration === 0 ? t('ui.sessionUnlimited') : t('ui.sessionMinutes', { mins: nextDuration });
-      this.toastMessage = t('ui.sessionToast', { label });
-      if (this.toastTimer) clearTimeout(this.toastTimer);
-      this.toastTimer = window.setTimeout(() => {
-        this.toastMessage = null;
-      }, 2500);
+      this.showToast(t('ui.sessionToast', { label }), 2500);
     });
 
     // OLED Noir toggle button
@@ -477,90 +502,6 @@ export class UIController {
     window.addEventListener('pointermove', resetActivity, { passive: true });
   }
 
-  public updateHarmonyState(): void {
-    const currentAtm = ATMOSPHERES.find(a => a.id === this.currentAtmosphereId) || ATMOSPHERES[0];
-    const isFreqMatch = this.currentTuning === currentAtm.recommendedTuning;
-    const isBeatMatch = Math.abs(this.currentBinauralBeat - currentAtm.recommendedBinauralBeat) < 0.1;
-    const isPatternMatch = this.currentPatternId === 'free_flow' || this.currentPatternId === currentAtm.recommendedPatternId;
-    const isFullyHarmonized = isFreqMatch && isBeatMatch && isPatternMatch;
-
-    // Update Header Tuning Badge
-    if (this.btnTuning && this.tuningText && this.tuningStatusTag) {
-      const tuningIcon = this.btnTuning.querySelector('.tuning-icon');
-      if (tuningIcon) {
-        tuningIcon.textContent = isFullyHarmonized ? '✨' : '∿';
-      }
-      this.tuningText.textContent = `${this.currentTuning} Hz`;
-      this.tuningStatusTag.textContent = isFullyHarmonized ? t('harmony.harmonized') : t('harmony.custom');
-
-      this.btnTuning.classList.toggle('is-harmonized', isFullyHarmonized);
-      this.btnTuning.classList.toggle('is-custom', !isFullyHarmonized);
-      this.btnTuning.title = isFullyHarmonized 
-        ? t('harmony.titleHarmonized', { name: currentAtm.name, hz: this.currentTuning })
-        : t('harmony.titleCustom', { hz: this.currentTuning });
-    }
-
-    // Update Tuning Drawer Status Banner
-    if (this.harmonyStatusBanner && this.harmonyStatusText && this.btnRestoreHarmony) {
-      this.harmonyStatusBanner.classList.toggle('is-harmonized', isFullyHarmonized);
-      this.harmonyStatusBanner.classList.toggle('is-custom', !isFullyHarmonized);
-
-      if (isFullyHarmonized) {
-        this.harmonyStatusText.textContent = t('harmony.inResonance', { name: currentAtm.name });
-        this.btnRestoreHarmony.classList.add('hidden');
-      } else {
-        const reason = !isFreqMatch
-          ? t('harmony.reasonFreq', { hz: this.currentTuning, rec: currentAtm.recommendedTuning })
-          : !isPatternMatch
-          ? t('harmony.reasonPattern', { name: currentAtm.name })
-          : t('harmony.reasonBeat');
-        this.harmonyStatusText.textContent = t('harmony.customReason', { reason });
-        this.btnRestoreHarmony.classList.remove('hidden');
-        this.btnRestoreHarmony.textContent = t('harmony.restore', { hz: currentAtm.recommendedTuning });
-      }
-    }
-
-    // Update Info Drawer Restore Button
-    if (this.btnInfoRestore) {
-      if (isFullyHarmonized) {
-        this.btnInfoRestore.classList.add('hidden');
-      } else {
-        this.btnInfoRestore.classList.remove('hidden');
-        this.btnInfoRestore.textContent = t('harmony.restoreFull', { hz: currentAtm.recommendedTuning, beat: currentAtm.binauralLabel });
-      }
-    }
-
-    // Highlight recommended badge tags in Tuning Drawer
-    const recTags = this.frequencyCardsContainer?.querySelectorAll<HTMLElement>('.freq-rec-tag');
-    recTags?.forEach(tag => {
-      const recFreq = parseInt(tag.dataset.rec || '0', 10);
-      tag.classList.toggle('hidden', recFreq !== currentAtm.recommendedTuning);
-    });
-
-    this.updateTuningDrawerSelection();
-  }
-
-  public restoreOptimalHarmony(): void {
-    const currentAtm = ATMOSPHERES.find(a => a.id === this.currentAtmosphereId) || ATMOSPHERES[0];
-    this.currentTuning = currentAtm.recommendedTuning;
-    this.currentBinauralBeat = currentAtm.recommendedBinauralBeat;
-    this.currentPatternId = currentAtm.recommendedPatternId;
-
-    this.updatePillsSelection();
-    this.updateHarmonyState();
-    this.callbacks.onRestoreHarmony?.(currentAtm);
-
-    this.closeTuningDrawer();
-    this.closeInfoDrawer();
-
-    // Show celebratory toast
-    this.toastMessage = t('harmony.restored', { name: currentAtm.name, hz: currentAtm.recommendedTuning, beat: currentAtm.binauralLabel });
-    if (this.toastTimer) clearTimeout(this.toastTimer);
-    this.toastTimer = window.setTimeout(() => {
-      this.toastMessage = null;
-    }, 3000);
-  }
-
   public toggleTuningDrawer(): void {
     if (this.isTuningDrawerOpen) {
       this.closeTuningDrawer();
@@ -570,17 +511,32 @@ export class UIController {
   }
 
   public openTuningDrawer(): void {
-    this.closeInfoDrawer();
+    this.closeInfoDrawer(false);
     this.isTuningDrawerOpen = true;
-    this.updateHarmonyState();
-    this.tuningDrawer?.classList.remove('hidden');
-    this.tuningDrawer?.setAttribute('aria-hidden', 'false');
+    this.showDrawer(this.tuningDrawer, this.btnCloseTuningDrawer);
   }
 
-  public closeTuningDrawer(): void {
+  public closeTuningDrawer(restoreFocus = true): void {
+    if (!this.isTuningDrawerOpen) return;
     this.isTuningDrawerOpen = false;
-    this.tuningDrawer?.classList.add('hidden');
-    this.tuningDrawer?.setAttribute('aria-hidden', 'true');
+    this.hideDrawer(this.tuningDrawer, restoreFocus);
+  }
+
+  /** Moves keyboard / screen-reader focus into a drawer, remembering where it came from. */
+  private showDrawer(drawer: HTMLElement | null, focusTarget: HTMLElement | null): void {
+    if (!this.drawerOpener) this.drawerOpener = document.activeElement as HTMLElement | null;
+    drawer?.classList.remove('hidden');
+    drawer?.setAttribute('aria-hidden', 'false');
+    focusTarget?.focus();
+  }
+
+  private hideDrawer(drawer: HTMLElement | null, restoreFocus: boolean): void {
+    drawer?.classList.add('hidden');
+    drawer?.setAttribute('aria-hidden', 'true');
+    if (restoreFocus) {
+      this.drawerOpener?.focus?.();
+      this.drawerOpener = null;
+    }
   }
 
   public toggleOledMode(): boolean {
@@ -612,18 +568,16 @@ export class UIController {
   }
 
   public openInfoDrawer(): void {
-    this.closeTuningDrawer();
+    this.closeTuningDrawer(false);
     this.isDrawerOpen = true;
     this.updateInfoDrawer();
-    this.updateHarmonyState();
-    this.infoDrawer?.classList.remove('hidden');
-    this.infoDrawer?.setAttribute('aria-hidden', 'false');
+    this.showDrawer(this.infoDrawer, this.btnCloseDrawer);
   }
 
-  public closeInfoDrawer(): void {
+  public closeInfoDrawer(restoreFocus = true): void {
+    if (!this.isDrawerOpen) return;
     this.isDrawerOpen = false;
-    this.infoDrawer?.classList.add('hidden');
-    this.infoDrawer?.setAttribute('aria-hidden', 'true');
+    this.hideDrawer(this.infoDrawer, restoreFocus);
   }
 
   public updateInfoDrawer(atmosphere?: Atmosphere, pattern?: BreathingPattern): void {
@@ -631,7 +585,7 @@ export class UIController {
     const currentPat = pattern || BREATHING_PATTERNS.find(p => p.id === this.currentPatternId) || BREATHING_PATTERNS[0];
 
     if (this.infoAtmIcon) this.infoAtmIcon.textContent = currentAtm.icon;
-    if (this.infoAtmTitle) this.infoAtmTitle.textContent = `${currentAtm.name} (${currentAtm.recommendedTuning} Hz)`;
+    if (this.infoAtmTitle) this.infoAtmTitle.textContent = currentAtm.name;
     if (this.infoAtmDesc) this.infoAtmDesc.textContent = currentAtm.description;
     if (this.infoAtmSource) this.infoAtmSource.textContent = t('ui.source', { source: currentAtm.scientificSource });
 
@@ -639,32 +593,14 @@ export class UIController {
     if (this.infoPatternTitle) this.infoPatternTitle.textContent = `${currentPat.name} — ${currentPat.tagline}`;
     if (this.infoPatternDesc) this.infoPatternDesc.textContent = currentPat.description;
     if (this.infoPatternSource) this.infoPatternSource.textContent = t('ui.source', { source: currentPat.scientificSource });
-  }
 
-  public updateAfterHarmonization(atmosphere: Atmosphere, pattern: BreathingPattern): void {
-    this.currentAtmosphereId = atmosphere.id;
-    this.currentPatternId = pattern.id;
-    this.currentTuning = atmosphere.recommendedTuning;
-    this.currentBinauralBeat = atmosphere.recommendedBinauralBeat;
-
-    this.updatePillsSelection();
-    this.updateAtmosphereSelection();
-    this.updateTuningBadge(atmosphere.recommendedTuning, atmosphere.binauralLabel);
-    this.updateInfoDrawer(atmosphere, pattern);
-    this.updateHarmonyState();
-
-    // Show temporary scientific toast in subtitle
-    this.toastMessage = `${atmosphere.icon} ${atmosphere.name} · ${atmosphere.recommendedTuning} Hz ${atmosphere.binauralLabel} · ${pattern.name}`;
-    
-    if (this.toastTimer) clearTimeout(this.toastTimer);
-    this.toastTimer = window.setTimeout(() => {
-      this.toastMessage = null;
-    }, 3200);
-  }
-
-  public updateAfterAtmosphereHarmonization(atmosphere: Atmosphere): void {
-    const pairedPat = BREATHING_PATTERNS.find(p => p.id === atmosphere.recommendedPatternId) || BREATHING_PATTERNS[0];
-    this.updateAfterHarmonization(atmosphere, pairedPat);
+    // Offer the atmosphere's suggested rhythm when another one is selected
+    const suggested = BREATHING_PATTERNS.find(p => p.id === currentAtm.suggestedPatternId);
+    if (this.btnInfoRestore) {
+      const offer = !!suggested && suggested.id !== currentPat.id;
+      this.btnInfoRestore.classList.toggle('hidden', !offer);
+      if (offer && suggested) this.btnInfoRestore.textContent = t('pairing.use', { pattern: suggested.name });
+    }
   }
 
   public updateState(state: BreathState, timerState?: TimerState): void {
@@ -752,17 +688,6 @@ export class UIController {
     document.body.classList.remove('sleep-dimmer-active');
   }
 
-  public updateTuningBadge(tuning: TuningFrequency, binauralLabel?: string): void {
-    if (this.tuningText) {
-      this.currentTuning = tuning;
-      this.tuningText.textContent = `${tuning} Hz`;
-      if (this.btnTuning) {
-        this.btnTuning.title = t('harmony.badgeTitle', { hz: tuning, beat: binauralLabel ? ` · ${binauralLabel}` : '' });
-      }
-    }
-    this.updateHarmonyState();
-  }
-
   public updateSoundState(isMuted: boolean): void {
     if (!this.btnSound) return;
     const soundOn = this.btnSound.querySelector('.icon-sound-on');
@@ -781,13 +706,7 @@ export class UIController {
     const currentIdx = ATMOSPHERES.findIndex(a => a.id === this.currentAtmosphereId);
     const nextIdx = (currentIdx + 1) % ATMOSPHERES.length;
     const nextAtmosphere = ATMOSPHERES[nextIdx];
-    this.currentAtmosphereId = nextAtmosphere.id;
-    this.currentTuning = nextAtmosphere.recommendedTuning;
-    this.currentBinauralBeat = nextAtmosphere.recommendedBinauralBeat;
-    this.updateAtmosphereSelection();
-    this.updateInfoDrawer(nextAtmosphere);
-    this.updateHarmonyState();
-    this.callbacks.onAtmosphereSelect(nextAtmosphere);
+    this.selectAtmosphere(nextAtmosphere);
     return nextAtmosphere;
   }
 
@@ -795,13 +714,7 @@ export class UIController {
     const currentIdx = ATMOSPHERES.findIndex(a => a.id === this.currentAtmosphereId);
     const prevIdx = (currentIdx - 1 + ATMOSPHERES.length) % ATMOSPHERES.length;
     const prevAtmosphere = ATMOSPHERES[prevIdx];
-    this.currentAtmosphereId = prevAtmosphere.id;
-    this.currentTuning = prevAtmosphere.recommendedTuning;
-    this.currentBinauralBeat = prevAtmosphere.recommendedBinauralBeat;
-    this.updateAtmosphereSelection();
-    this.updateInfoDrawer(prevAtmosphere);
-    this.updateHarmonyState();
-    this.callbacks.onAtmosphereSelect(prevAtmosphere);
+    this.selectAtmosphere(prevAtmosphere);
     return prevAtmosphere;
   }
 
@@ -824,14 +737,7 @@ export class UIController {
 
   public selectPatternByIndex(idx: number): void {
     if (idx >= 0 && idx < BREATHING_PATTERNS.length) {
-      const pattern = BREATHING_PATTERNS[idx];
-      this.currentPatternId = pattern.id;
-      this.isSessionComplete = false;
-      this.toastMessage = null;
-      this.updatePillsSelection();
-      this.updateInfoDrawer();
-      this.updateHarmonyState();
-      this.callbacks.onPatternSelect(pattern.id);
+      this.selectPattern(BREATHING_PATTERNS[idx].id);
     }
   }
 

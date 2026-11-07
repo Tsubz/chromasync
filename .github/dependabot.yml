@@ -1,0 +1,26 @@
+# Weekly dependency updates. Actions are pinned to commit SHAs; Dependabot bumps the SHA
+# and the version comment together.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ['*']
+
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      capacitor:
+        patterns: ['@capacitor/*']
+      tooling:
+        dependency-type: development
+
+  - package-ecosystem: gradle
+    directory: /android
+    schedule:
+      interval: monthly

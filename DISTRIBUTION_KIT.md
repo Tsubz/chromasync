@@ -38,7 +38,7 @@ I built Chromasync (https://chromasync-app.web.app) because I was exhausted by t
 Chromasync is a single-purpose chromatic breathing companion engineered with a zero-bloat mandate:
 
 1. Zero External Audio Files:
-There are no .mp3, .wav, or .ogg files. Every nature soundscape (rain Poisson impulses, oceanic Brownian noise filters, singing bowl modal synthesis) and acoustic carrier (432 Hz / 528 Hz binaural beats) is computed in real time on the Web Audio API.
+There are no .mp3, .wav, or .ogg files. Every nature soundscape (rain Poisson impulses, oceanic Brownian noise filters, singing bowl modal synthesis) and the ambient chord (432 Hz tuning, optional binaural beats) is computed in real time on the Web Audio API.
 
 2. Zero Image Textures:
 All visual fluid dynamics, liquid caustics, and particle fields are rendered directly on the GPU via custom WebGL GLSL fragment shaders (~40 KB gzipped production web bundle).
@@ -110,7 +110,7 @@ Description: |-
   - Zero external audio files: 100% procedural synthetic soundscapes via Web Audio API.
   - Zero image textures: Pure WebGL GLSL shaders.
   - Resonance breathing at 5.5 breaths/min (~0.1 Hz), plus box, 4-7-8, physiological sigh and free-paced modes.
-  - Optional 432 / 528 Hz tunings and headphone binaural beats, offered as preferences.
+  - 432 or 440 Hz tuning, and opt-in binaural beats for headphones (off by default).
   - Completely free, open source, zero ads, zero trackers.
 ```
 
@@ -131,7 +131,7 @@ Most breathing apps on the app stores are 200MB+ bloated wrappers that require a
 
 I wanted a pure, distraction-free tool that implements the clinical baroreflex literature:
 - Resonance breathing: 5.5s in / 5.5s out (5.5 breaths/min), near the average adult resonance frequency (4.5–7 breaths/min) where HRV peaks (Lehrer & Gevirtz, 2014; Lin et al., 2014). If you know your own resonance frequency from an HRV sensor, Free Breath mode lets you pace yourself.
-- Audio: generative ambient chord with optional 432/528 Hz tunings and hard-panned binaural beats (4 / 5.5 / 10 Hz). I'm upfront that the evidence for tunings and entrainment is thin; they're there because some people like them.
+- Audio: generative ambient chord tuned to 432 or 440 Hz, and opt-in hard-panned binaural beats (4 / 5.5 / 10 Hz, off by default). I dropped 528 Hz "Solfeggio" (no basis) and I'm upfront that the evidence for tunings and entrainment is thin.
 - Visuals: fractal shaders calibrated to a measured box-counting dimension of ~1.4 (Taylor's fractal-fluency range), with an automated test.
 - 100% Free & Private: No account, no analytics, runs in your browser or installs as a PWA/APK.
 

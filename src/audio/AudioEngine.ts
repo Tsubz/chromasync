@@ -20,6 +20,7 @@ export class AudioEngine {
   private isUnlocked: boolean = false;
   private volume: number = 0.8;
   private currentTuning: TuningFrequency = 432;
+  private currentBeat: number = 0;
   private currentAtmosphereId: AtmosphereId = 'aurora';
 
   constructor() {}
@@ -41,7 +42,7 @@ export class AudioEngine {
 
       // Sub-modules routing through reverb space
       this.synthChord = new SynthChord(this.ctx, this.reverb.input);
-      this.synthChord.setTuning(this.currentTuning);
+      this.synthChord.setTuningAndBeat(this.currentTuning, this.currentBeat);
       this.soundEffects = new SoundEffects(this.ctx, this.masterGain);
       this.tibetanBowl = new TibetanBowlSynthesizer(this.ctx, this.reverb.input);
       this.atmosphereSounds = new AtmosphereSoundManager(this.ctx, this.masterGain, this.reverb.input);
@@ -79,15 +80,20 @@ export class AudioEngine {
     }
   }
 
+  /** Switches the soundscape only; tuning and binaural beats are separate user settings. */
   public setAtmosphere(atmosphere: Atmosphere): void {
     this.currentAtmosphereId = atmosphere.id;
-    this.currentTuning = atmosphere.recommendedTuning;
-
     if (this.atmosphereSounds) {
       this.atmosphereSounds.setAtmosphere(atmosphere.id);
     }
+  }
+
+  /** Reference pitch of the ambient chord, and left/right difference (0 = no binaural beat). */
+  public setSound(tuning: TuningFrequency, binauralBeat: number): void {
+    this.currentTuning = tuning;
+    this.currentBeat = binauralBeat;
     if (this.synthChord) {
-      this.synthChord.setTuningAndBeat(atmosphere.recommendedTuning, atmosphere.recommendedBinauralBeat);
+      this.synthChord.setTuningAndBeat(tuning, binauralBeat);
     }
   }
 
@@ -101,38 +107,8 @@ export class AudioEngine {
     this.tibetanBowl.strike(this.currentTuning * 0.425);
   }
 
-  public setTuningAndBeat(tuning: TuningFrequency, beat: number): void {
-    this.currentTuning = tuning;
-    if (this.synthChord) {
-      this.synthChord.setTuningAndBeat(tuning, beat);
-    }
-  }
-
-  public setTuning(tuning: TuningFrequency): void {
-    this.currentTuning = tuning;
-    if (this.synthChord) {
-      this.synthChord.setTuning(tuning);
-    }
-  }
-
-  public cycleNextTuning(): TuningFrequency {
-    const tunings: TuningFrequency[] = [432, 440, 528];
-    const currentIdx = tunings.indexOf(this.currentTuning);
-    const nextTuning = tunings[(currentIdx + 1) % tunings.length];
-    this.setTuning(nextTuning);
-    return nextTuning;
-  }
-
-  public getTuning(): TuningFrequency {
-    return this.currentTuning;
-  }
-
   public getCurrentAtmosphereId(): string {
     return this.currentAtmosphereId;
-  }
-
-  public getBinauralBeat(): number {
-    return this.synthChord ? this.synthChord.getBinauralBeat() : 5.5;
   }
 
   /** Sets the initial mute state without creating the AudioContext (no user gesture yet). */
