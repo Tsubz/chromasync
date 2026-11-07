@@ -19,7 +19,7 @@ Install the debug APK (CI artifact `chromasync-debug-apk`) and the TestFlight bu
 - [ ] First launch: safety notes appear once; "shorter holds" is ticked
 - [ ] Haptics on each phase; screen stays on for a 10-minute session; screen can sleep again after pausing
 - [ ] Sound with the iPhone silent switch on; music from another app keeps playing underneath
-- [ ] Headphones: binaural beats audible (left/right different), unplugging does not crash
+- [ ] Headphones: turn binaural beats on in the Sound panel; left/right audibly different; unplugging does not crash
 - [ ] Incoming call / notification / lock screen mid-session: session pauses, resumes on tap
 - [ ] Notch and gesture bar: nothing hidden under the status or navigation bars (portrait and landscape, iPad split view)
 - [ ] Android back button: closes drawers, then pauses, then exits
@@ -54,6 +54,6 @@ The app has no analytics or crash SDK by design. The stores provide crash data a
 
 ## 7. Product decisions (yours)
 
-- [ ] **528 Hz "Solfeggio" tuning and binaural beats**: the app now presents itself as "the science, honestly", while its own science pages describe these as weakly supported. Options: keep them as labelled preferences (current), move them into an "advanced" section off by default, or remove them
+- [x] **528 Hz and binaural beats** (decided): 528 Hz "Solfeggio" removed (no scientific basis); binaural beats kept as an opt-in, off by default (headphones only, modest evidence); tuning 432 Hz by default, 440 Hz available
 - [ ] **One success metric** to watch in the store dashboards, e.g. users who come back within 7 days, rather than adding features
 - [ ] **Five short usability sessions**: hand a first-time user the phone, ask them to "do a 3-minute calm breathing session", and watch without helping

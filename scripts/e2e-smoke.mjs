@@ -182,6 +182,45 @@ try {
   check('Info drawer shows the medical disclaimer', await page.isVisible('.drawer-disclaimer'));
   await page.keyboard.press('Escape');
 
+  // Atmosphere and rhythm are independent; the atmosphere only suggests a rhythm
+  const selection = () => page.evaluate(() => ({
+    atmosphere: [...document.querySelectorAll('#atmosphere-swatches .atmosphere-btn')].findIndex(b => b.classList.contains('active')),
+    pattern: [...document.querySelectorAll('#pattern-pills .pill-btn')].findIndex(b => b.classList.contains('active')),
+    suggested: [...document.querySelectorAll('#pattern-pills .pill-btn')].findIndex(b => b.classList.contains('is-suggested'))
+  }));
+  await page.click('#pattern-pills .pill-btn:nth-child(4)');          // 4-7-8
+  await page.click('#atmosphere-swatches .atmosphere-btn:nth-child(2)'); // Ocean (suggests box)
+  let sel = await selection();
+  check('Choosing an atmosphere keeps the chosen rhythm', sel.atmosphere === 1 && sel.pattern === 3, JSON.stringify(sel));
+  check('The atmosphere marks its suggested rhythm', sel.suggested === 2, JSON.stringify(sel));
+  await page.click('#pattern-pills .pill-btn:nth-child(5)');          // 4-2-6
+  sel = await selection();
+  check('Choosing a rhythm keeps the chosen atmosphere', sel.atmosphere === 1 && sel.pattern === 4, JSON.stringify(sel));
+  await page.click('#btn-info');
+  await page.waitForTimeout(300);
+  await page.click('#btn-info-restore');
+  sel = await selection();
+  check('"Use the suggested rhythm" applies it on request', sel.pattern === 2, JSON.stringify(sel));
+  await page.keyboard.press('Escape');
+  await page.click('#btn-info');
+  await page.waitForTimeout(300);
+  check('No suggestion offered once the suggested rhythm is used', !(await page.isVisible('#btn-info-restore')));
+  await page.keyboard.press('Escape');
+
+  // Sound: binaural beats are opt-in
+  check('Binaural beats are off by default', !(await page.isVisible('#tuning-status-tag')));
+  await page.click('#btn-tuning');
+  await page.waitForTimeout(300);
+  check('Only 432 and 440 Hz tunings are offered', (await page.locator('#frequency-cards .freq-card').count()) === 2);
+  await page.check('#binaural-toggle');
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(200);
+  check('Turning binaural beats on shows a headphones tag', (await page.textContent('#tuning-status-tag'))?.includes('🎧') === true);
+  await page.click('#btn-tuning');
+  await page.waitForTimeout(300);
+  await page.uncheck('#binaural-toggle');
+  await page.keyboard.press('Escape');
+
   // Accessibility: drawers take focus and give it back; phase announcements stay short
   await page.focus('#btn-tuning');
   await page.keyboard.press('Enter');
@@ -249,6 +288,38 @@ try {
   check('No external network requests', externalRequests.length === 0, externalRequests.join(', '));
   check('No runtime errors', errors.length === 0, errors.join(' | '));
   await ctx.close();
+
+  // --- Small phone: the info drawer must scroll to its last control ---
+  const smallCtx = await browser.newContext({ viewport: { width: 360, height: 640 }, locale: 'fr-FR', hasTouch: true, isMobile: true });
+  await smallCtx.addInitScript(markOnboarded);
+  const small = await smallCtx.newPage();
+  await small.goto(BASE_URL, { waitUntil: 'networkidle' });
+  await small.click('#btn-info');
+  await small.waitForTimeout(400);
+  const drawerFits = await small.evaluate(() => {
+    const content = document.querySelector('#info-drawer .drawer-content').getBoundingClientRect();
+    const body = document.querySelector('#info-drawer .drawer-body');
+    body.scrollTop = body.scrollHeight;
+    const last = document.getElementById('gentle-holds').getBoundingClientRect();
+    return { top: Math.round(content.top), scrollable: body.scrollHeight > body.clientHeight, lastVisible: last.bottom <= innerHeight && last.top >= 0 };
+  });
+  check('Info drawer fits the screen and scrolls on a small phone', drawerFits.top >= 0 && drawerFits.scrollable && drawerFits.lastVisible, JSON.stringify(drawerFits));
+  // Real touch scroll on the drawer body
+  await small.evaluate(() => { document.querySelector('#info-drawer .drawer-body').scrollTop = 0; });
+  const box = await small.locator('#info-drawer .drawer-body').boundingBox();
+  const cdp = await smallCtx.newCDPSession(small);
+  // Raw touch events (Chrome's synthetic scroll gesture does nothing in headless mode)
+  const touchX = Math.round(box.x + box.width / 2);
+  const fromY = Math.round(box.y + box.height * 0.85);
+  await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: touchX, y: fromY }] });
+  for (let y = fromY - 10; y >= fromY - 250; y -= 10) {
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: touchX, y }] });
+  }
+  await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  await small.waitForTimeout(300);
+  const scrolled = await small.evaluate(() => document.querySelector('#info-drawer .drawer-body').scrollTop);
+  check('Swiping up scrolls the info drawer', scrolled > 50, `scrollTop ${scrolled}`);
+  await smallCtx.close();
 
   // --- English locale ---
   const enCtx = await browser.newContext({ locale: 'en-US' });

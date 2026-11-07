@@ -41,9 +41,9 @@ Vagal outflow to the heart is gated by respiration: partly blocked during inspir
 
 ## 3. Audio Engine (Web Audio)
 
-- **Ambient chord:** five voices at 0.25, 0.375, 0.5, 0.5625 and 0.625 × the reference pitch (432, 440 or 528 Hz), i.e. about 108–270 Hz at 432 Hz, through a breath-controlled low-pass filter and a procedurally generated stereo reverb.
-- **Binaural beats:** each voice is a left/right pair separated by 4, 5.5 or 10 Hz and hard-panned (measured crosstalk below −90 dB). A shared slow pitch drift keeps the interaural difference exact. Headphones required; entrainment evidence is mixed (Ingendoh et al., PLoS ONE 2023; Garcia-Argibay et al., Psychol. Res. 2019).
-- **Tuning evidence:** 432 Hz (Calamassi & Pomponi 2019; Calamassi et al. 2020; Aravena et al. 2020) and 528 Hz (Akimoto et al. 2018, n = 9) are small pilot studies.
+- **Ambient chord:** five voices at 0.25, 0.375, 0.5, 0.5625 and 0.625 × the reference pitch (432 Hz by default, or 440 Hz), i.e. about 108–270 Hz at 432 Hz, through a breath-controlled low-pass filter and a procedurally generated stereo reverb.
+- **Binaural beats (off by default, opt-in in the Sound panel):** each voice is a left/right pair separated by 4, 5.5 or 10 Hz and hard-panned (measured crosstalk below −90 dB). A shared slow pitch drift keeps the interaural difference exact. Headphones required; entrainment evidence is mixed (Ingendoh et al., PLoS ONE 2023; Garcia-Argibay et al., Psychol. Res. 2019).
+- **Tuning evidence:** studies on 432 Hz (Calamassi & Pomponi 2019; Calamassi et al. 2020; Aravena et al. 2020) are small pilots. 528 Hz "Solfeggio" was removed: the only study (Akimoto et al. 2018, n = 9) is tiny and its authors note that Solfeggio claims have no scientific basis.
 - **Soundscapes:** stereo pink noise beds; Minnaert-model bubble chirps for the ocean (f ≈ 3 kHz·mm / radius); stochastic leaf and needle droplets (≈520–900 Hz and 1.8–3.2 kHz) for rain; crackle bursts for the hearth; crystalline partials for the astral mode.
 - **Session end:** a singing bowl from inharmonic partials (1, 2.76, 5.40, 8.93 × f0, with slightly detuned pairs for beating).
 - No audio files are downloaded.

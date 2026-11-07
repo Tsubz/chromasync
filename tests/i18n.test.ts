@@ -28,13 +28,13 @@ describe('i18n', () => {
       for (const text of texts) expect(text).not.toMatch(/^pattern\./);
     }
     for (const atm of ATMOSPHERES) {
-      const texts = [atm.name, atm.shortName, atm.tagline, atm.description, atm.binauralLabel, atm.scientificTarget];
+      const texts = [atm.name, atm.shortName, atm.tagline, atm.description];
       for (const text of texts) expect(text).not.toMatch(/^atm\./);
     }
   });
 
   it('fills placeholders', () => {
     setLocale('en');
-    expect(t('a11y.tuningSet', { hz: 432 })).toBe('Tuning set to 432 Hz');
+    expect(t('pairing.suggestedFor', { atmosphere: 'Ocean' })).toBe('Suggested for Ocean');
   });
 });

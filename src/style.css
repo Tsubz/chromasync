@@ -350,17 +350,6 @@ body.sleep-dimmer-active .phase-indicator-ring {
   transform: translateY(-1px);
 }
 
-.tuning-badge-btn.is-harmonized {
-  border-color: rgba(67, 233, 123, 0.45);
-  background: rgba(67, 233, 123, 0.12);
-  box-shadow: 0 0 16px rgba(67, 233, 123, 0.15);
-}
-
-.tuning-badge-btn.is-custom {
-  border-color: rgba(246, 211, 101, 0.45);
-  background: rgba(246, 211, 101, 0.12);
-}
-
 .tuning-status-tag {
   font-size: 0.68rem;
   padding: 0.15rem 0.45rem;
@@ -369,16 +358,6 @@ body.sleep-dimmer-active .phase-indicator-ring {
   color: rgba(255, 255, 255, 0.85);
   font-weight: 600;
   letter-spacing: 0.02em;
-}
-
-.tuning-badge-btn.is-harmonized .tuning-status-tag {
-  background: rgba(67, 233, 123, 0.25);
-  color: #43e97b;
-}
-
-.tuning-badge-btn.is-custom .tuning-status-tag {
-  background: rgba(246, 211, 101, 0.25);
-  color: #f6d365;
 }
 
 .tuning-icon {
@@ -501,6 +480,7 @@ body.sleep-dimmer-active .phase-indicator-ring {
 }
 
 .pill-btn {
+  position: relative;
   background: transparent;
   border: none;
   color: var(--text-secondary);
@@ -513,6 +493,19 @@ body.sleep-dimmer-active .phase-indicator-ring {
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
+}
+
+/* Rhythm suggested for the current atmosphere: a small dot, never forced */
+.pill-btn.is-suggested::after {
+  content: '';
+  position: absolute;
+  top: 5px;
+  right: 7px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #ffeaa7;
+  box-shadow: 0 0 6px rgba(255, 234, 167, 0.8);
 }
 
 .name-full {
@@ -999,6 +992,11 @@ body.oled-black-active::after {
   margin: 0 auto;
   box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.6);
   animation: drawerSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  /* Never taller than the screen: the header and footer stay put, the body scrolls
+     (the page itself never scrolls, so an overflowing drawer was cut off at the top) */
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100dvh - max(12px, max(env(safe-area-inset-top, 0px), var(--safe-area-inset-top, 0px))));
 }
 
 @keyframes drawerSlideUp {
@@ -1053,6 +1051,21 @@ body.oled-black-active::after {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  /* Room for the scrollbar and focus rings */
+  margin: 0 -0.5rem;
+  padding: 0 0.5rem 0.25rem;
+}
+
+.drawer-handle,
+.drawer-header,
+.drawer-footer {
+  flex-shrink: 0;
 }
 
 .drawer-card {
@@ -1231,50 +1244,6 @@ body.oled-black-active::after {
   transform: translateY(0) scale(0.98);
 }
 
-/* Harmony Status Banner */
-.harmony-status-banner {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  padding: 0.85rem 1.1rem;
-}
-
-.harmony-status-banner.is-harmonized {
-  border-color: rgba(67, 233, 123, 0.35);
-  background: rgba(67, 233, 123, 0.08);
-}
-
-.harmony-status-banner.is-custom {
-  border-color: rgba(246, 211, 101, 0.35);
-  background: rgba(246, 211, 101, 0.08);
-}
-
-.status-indicator {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  font-size: 0.82rem;
-  font-weight: 500;
-  color: var(--text-primary);
-}
-
-.status-pulse-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #43e97b;
-  box-shadow: 0 0 8px #43e97b;
-  flex-shrink: 0;
-}
-
-.harmony-status-banner.is-custom .status-pulse-dot {
-  background: #f6d365;
-  box-shadow: 0 0 8px #f6d365;
-}
-
 /* Drawer Sections */
 .drawer-section {
   display: flex;
@@ -1390,6 +1359,10 @@ body.oled-black-active::after {
 
 .binaural-pill:hover {
   background: rgba(255, 255, 255, 0.1);
+}
+
+.binaural-pills.is-off .binaural-pill {
+  opacity: 0.45;
 }
 
 .binaural-pill.active {

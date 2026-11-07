@@ -1,4 +1,5 @@
-export type TuningFrequency = 432 | 440 | 528;
+/** Reference pitch for A4. 528 Hz ("Solfeggio") was removed: it has no scientific basis. */
+export type TuningFrequency = 432 | 440;
 
 export interface ChordVoice {
   oscLeft: OscillatorNode;
@@ -15,7 +16,7 @@ export class SynthChord {
   private voices: ChordVoice[] = [];
   
   private currentTuning: TuningFrequency = 432;
-  private currentBinauralBeat: number = 5.5; // in Hz
+  private currentBinauralBeat: number = 0; // in Hz; 0 = both ears hear the same tones
   // Base intervals relative to reference A (Major 9th / Sus2 ethereal chord)
   private intervalRatios = [0.25, 0.375, 0.5, 0.5625, 0.625];
 

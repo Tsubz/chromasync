@@ -52,7 +52,7 @@ Chromasync combines paced breathing, generative visuals and sound. Each claim be
          ▼                         ▼                         ▼
 ┌──────────────────┐     ┌──────────────────┐     ┌──────────────────┐
 │  Visual Shaders  │     │ Web Audio Engine │     │ Hardware Haptics │
-│ Fractal visuals  │     │ 432/440/528 Hz   │     │ Tactile Pulses   │
+│ Fractal visuals  │     │ 432 or 440 Hz    │     │ Tactile Pulses   │
 │ (measured D≈1.4) │     │ Binaural beats   │     │  (Eyes-Closed)   │
 └──────────────────┘     └──────────────────┘     └──────────────────┘
 ```
@@ -74,19 +74,19 @@ The vagus nerve slows the heart mainly during exhalation (Eckberg, 2003). **4-7-
 Richard Taylor's research links natural fractals with a dimension of D ≈ 1.3–1.5 to easier visual processing and lower stress. Chromasync's shader parameters are calibrated so the rendered contours measure **D ≈ 1.37–1.42 by box-counting** in all five atmospheres, and the end-to-end test fails if any mode leaves that range. Before this calibration the visuals measured D ≈ 1.7.
 
 ### 4. Sound
-The 432/528 Hz tunings and binaural beats are offered as preferences: the studies behind them are small pilots, and evidence that binaural beats entrain brainwaves is mixed (Ingendoh et al., 2023). Binaural beats need headphones; Chromasync keeps left and right strictly separated so they are real binaural beats.
+The ambient chord is tuned to 432 Hz by default, or 440 Hz: a matter of taste, since the studies on 432 Hz are small pilots. 528 Hz "Solfeggio" is deliberately not offered: there is no scientific basis for it. Binaural beats are **off by default** and opt-in in the Sound panel: they need headphones (on a speaker they only wobble), and evidence that they entrain brainwaves is mixed (Ingendoh et al., 2023). When on, left and right are strictly separated so they are real binaural beats.
 
 ---
 
 ## 🎨 The 5 Unified Atmospheres
 
-| Atmosphere | Breathing Pattern | Tuning & Binaural Beat | Palette | Shader |
-|:---|:---|:---|:---|:---|
-| **🌌 Celestial Aurora** | **Resonance** (5.5s In / 5.5s Out) | 432 Hz · 5.5 Hz | Peach / gold | Domain-warped fBm fluid |
-| **🌊 Oceanic Tide** | **Box** (4s In / 4s Hold / 4s Out / 4s Hold) | 528 Hz · 10 Hz | Cyan / sapphire | Liquid caustics |
-| **🌧️ Forest Rain** | **Deep Unwind** (4s In / 2s Hold / 6s Out) | 432 Hz · 5.5 Hz | Canopy green | Rain ripple rings |
-| **🕯️ Warm Hearth** | **4-7-8 Relax** (4s In / 7s Hold / 8s Out) | 432 Hz · 4 Hz | Amber, <1% of a white screen's blue light | Rising embers |
-| **✨ Astral Void** | **Physiological Sigh** (3s In / 1.2s Top-up / 6s Out) | 528 Hz · 5.5 Hz | Violet / indigo | Nebula & star glints |
+| Atmosphere | Suggested rhythm (any can be chosen) | Palette | Shader |
+|:---|:---|:---|:---|
+| **🌌 Celestial Aurora** | **Resonance** (5.5s In / 5.5s Out) | Peach / gold | Domain-warped fBm fluid |
+| **🌊 Oceanic Tide** | **Box** (4s In / 4s Hold / 4s Out / 4s Hold) | Cyan / sapphire | Liquid caustics |
+| **🌧️ Forest Rain** | **Deep Unwind** (4s In / 2s Hold / 6s Out) | Canopy green | Rain ripple rings |
+| **🕯️ Warm Hearth** | **4-7-8 Relax** (4s In / 7s Hold / 8s Out) | Amber, <1% of a white screen's blue light | Rising embers |
+| **✨ Astral Void** | **Physiological Sigh** (3s In / 1.2s Top-up / 6s Out) | Violet / indigo | Nebula & star glints |
 
 ---
 

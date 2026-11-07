@@ -1,4 +1,3 @@
-import { TuningFrequency } from '../audio/SynthChord';
 import { tDynamic } from '../i18n';
 
 export interface RGBColor {
@@ -25,14 +24,11 @@ export interface Atmosphere {
   exhaleCool: RGBColor;
   accent: RGBColor;
   // Scientific Auto-Harmonization parameters
-  recommendedTuning: TuningFrequency;
-  recommendedBinauralBeat: number; // in Hz (e.g. 5.5 = Theta, 10.0 = Alpha)
-  binauralLabel: string;
-  recommendedPatternId: string;
-  scientificTarget: string;
+  /** Rhythm suggested with this atmosphere; the user can combine it with any other */
+  suggestedPatternId: string;
 }
 
-type AtmosphereText = 'name' | 'shortName' | 'tagline' | 'description' | 'binauralLabel' | 'scientificTarget';
+type AtmosphereText = 'name' | 'shortName' | 'tagline' | 'description';
 
 // Display texts live in src/i18n under `atm.<id>.*` and are resolved on read.
 function defineAtmosphere(def: Omit<Atmosphere, AtmosphereText>): Atmosphere {
@@ -42,16 +38,14 @@ function defineAtmosphere(def: Omit<Atmosphere, AtmosphereText>): Atmosphere {
     get name() { return text('name'); },
     get shortName() { return text('shortName'); },
     get tagline() { return text('tagline'); },
-    get description() { return text('description'); },
-    get binauralLabel() { return text('beat'); },
-    get scientificTarget() { return text('target'); }
+    get description() { return text('description'); }
   };
 }
 
 export const ATMOSPHERES: Atmosphere[] = [
   defineAtmosphere({
     id: 'aurora',
-    scientificSource: 'Fractal fluency (Taylor et al., Front. Hum. Neurosci. 2011) · 432 Hz pilot (Calamassi & Pomponi, Explore 2019)',
+    scientificSource: 'Fractal fluency (Taylor et al., Front. Hum. Neurosci. 2011)',
     icon: '🌌',
     shaderMode: 0,
     swatchGradient: 'linear-gradient(135deg, #ff9a8b 0%, #ff6a88 50%, #ff99ac 100%)',
@@ -60,13 +54,11 @@ export const ATMOSPHERES: Atmosphere[] = [
     holdLuster: { r: 1.0, g: 0.88, b: 0.65 },
     exhaleCool: { r: 0.45, g: 0.25, b: 0.58 },
     accent: { r: 0.98, g: 0.42, b: 0.52 },
-    recommendedTuning: 432,
-    recommendedBinauralBeat: 5.5,
-    recommendedPatternId: 'coherence_55'
+    suggestedPatternId: 'coherence_55'
   }),
   defineAtmosphere({
     id: 'ocean',
-    scientificSource: 'Natural sounds review (Buxton et al., PNAS 2021) · 528 Hz pilot, n=9 (Akimoto et al., Health 2018)',
+    scientificSource: 'Natural sounds review (Buxton et al., PNAS 2021)',
     icon: '🌊',
     shaderMode: 1,
     swatchGradient: 'linear-gradient(135deg, #00f2fe 0%, #4facfe 100%)',
@@ -75,9 +67,7 @@ export const ATMOSPHERES: Atmosphere[] = [
     holdLuster: { r: 0.58, g: 0.96, b: 1.0 },
     exhaleCool: { r: 0.06, g: 0.16, b: 0.45 },
     accent: { r: 0.32, g: 0.42, b: 0.92 },
-    recommendedTuning: 528,
-    recommendedBinauralBeat: 10.0,
-    recommendedPatternId: 'box_4444'
+    suggestedPatternId: 'box_4444'
   }),
   defineAtmosphere({
     id: 'rain',
@@ -90,9 +80,7 @@ export const ATMOSPHERES: Atmosphere[] = [
     holdLuster: { r: 0.86, g: 0.98, b: 0.72 },
     exhaleCool: { r: 0.10, g: 0.32, b: 0.26 },
     accent: { r: 0.22, g: 0.72, b: 0.65 },
-    recommendedTuning: 432,
-    recommendedBinauralBeat: 5.5,
-    recommendedPatternId: 'sleep_426'
+    suggestedPatternId: 'sleep_426'
   }),
   defineAtmosphere({
     id: 'hearth',
@@ -106,9 +94,7 @@ export const ATMOSPHERES: Atmosphere[] = [
     holdLuster: { r: 1.0, g: 0.84, b: 0.38 },
     exhaleCool: { r: 0.58, g: 0.26, b: 0.10 },
     accent: { r: 0.92, g: 0.48, b: 0.22 },
-    recommendedTuning: 432,
-    recommendedBinauralBeat: 4.0,
-    recommendedPatternId: 'relax_478'
+    suggestedPatternId: 'relax_478'
   }),
   defineAtmosphere({
     id: 'astral',
@@ -121,8 +107,6 @@ export const ATMOSPHERES: Atmosphere[] = [
     holdLuster: { r: 0.96, g: 0.85, b: 1.0 },
     exhaleCool: { r: 0.30, g: 0.22, b: 0.52 },
     accent: { r: 0.62, g: 0.75, b: 0.96 },
-    recommendedTuning: 528,
-    recommendedBinauralBeat: 5.5,
-    recommendedPatternId: 'sigh_huberman'
+    suggestedPatternId: 'sigh_huberman'
   })
 ];

@@ -31,7 +31,7 @@ export function parseDeepLink(search: string, patternIds: string[], atmosphereId
   if (patternId && patternIds.includes(patternId)) link.patternId = patternId;
 
   const tuning = Number(params.get('tuning'));
-  if (tuning === 432 || tuning === 440 || tuning === 528) link.tuning = tuning;
+  if (tuning === 432 || tuning === 440) link.tuning = tuning;
 
   return link;
 }
